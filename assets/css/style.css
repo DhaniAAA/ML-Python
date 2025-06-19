@@ -1,0 +1,69 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+#wordcloud {
+    width: 100%;
+    height: 300px;
+    margin-top: 1.5rem;
+}
+
+#sentimentChart {
+    margin-top: 1.5rem;
+}
+
+.alert {
+    margin-bottom: 1.5rem;
+}
+
+textarea.form-control {
+    resize: vertical;
+}
+
+/* Animasi loading */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+}
+
+.loading:after {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    #wordcloud {
+        height: 200px;
+    }
+}

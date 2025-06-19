@@ -1,0 +1,128 @@
+/* Navbar Styling - Analisis Sentimen App */
+:root {
+    --primary-color: #0f2027;
+    --primary-hover: #203a43;
+    --secondary-color: #2c5364;
+    --light-color: #f8f9fa;
+}
+
+/* Styling utama navbar */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0.8rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Brand/logo */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: white !important;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand i {
+    margin-right: 6px;
+}
+
+/* Toggler untuk tampilan mobile */
+.navbar-toggler {
+    border: none;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.25);
+}
+
+.navbar-toggler-icon {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+/* Menu items */
+.nav-item {
+    margin: 0 3px;
+    position: relative;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.nav-item.active .nav-link {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+.nav-link i {
+    margin-right: 6px;
+}
+
+/* Styling untuk dropdown jika ada */
+.dropdown-menu {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 0.5rem;
+    margin-top: 10px;
+}
+
+.dropdown-item {
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: rgba(15, 32, 39, 0.1);
+}
+
+.dropdown-item i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+/* Responsivitas pada perangkat mobile */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        background-color: rgba(15, 32, 39, 0.95);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+    
+    .nav-item {
+        margin: 3px 0;
+    }
+    
+    .nav-link {
+        padding: 0.7rem 1rem;
+    }
+} 

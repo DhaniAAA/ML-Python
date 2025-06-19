@@ -1,0 +1,4 @@
+# Hapus baris dengan nilai kosong (NaN)
+df = df.dropna()
+# Hapus duplikat berdasarkan teks tweet yang sudah dibersihkan
+df = df.drop_duplicates(subset='tweet', keep='first')
