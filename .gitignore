@@ -1,1 +1,44 @@
-models/naive_bayes.dat
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Log files
+*.log
+
+# Model files (optional, uncomment if you don't want to track model files)
+# models/*.pkl
+# models/*.dat
+
+# Data files (optional, uncomment if you don't want to track data files)
+# data/uploads/*
+
+# Environment variables
+.env
+
+# PHP specific
+vendor/
+composer.phar
+
+# OS specific
+.DS_Store
+Thumbs.db
