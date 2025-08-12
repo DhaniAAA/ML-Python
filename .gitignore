@@ -37,6 +37,13 @@ data/testing/*
 *.test.*
 test_*.php
 test_*.py
+check_*.php
+notes.txt
+sample_*.php
+
+#debug
+debug_emoji.log
+debug_*.log
 
 # Environment variables
 .env
