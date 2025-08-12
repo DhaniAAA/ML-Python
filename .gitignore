@@ -29,8 +29,14 @@ ENV/
 models/*.pkl
 models/*.dat
 
-# Data files (optional, uncomment if you don't want to track data files)
-# data/uploads/*
+# Data files
+data/uploads/*
+
+# Test files
+data/testing/*
+*.test.*
+test_*.php
+test_*.py
 
 # Environment variables
 .env
