@@ -105,12 +105,23 @@ class SentimentModel {
      * @return array Array berisi stemmed_text dan tokens
      */
     public function preprocessText($text) {
-        // Preprocessing
+        // Konversi emoji dan emoticon
         $text = $this->preprocessor->convertEmoji($text);
         $text = $this->preprocessor->convertEmoticons($text);
+        
+        // Clean text
         $text = $this->preprocessor->cleanText($text);
-        $text = $this->preprocessor->removeStopwords($text);
+        
+        // Terjemahkan bahasa Inggris ke Indonesia
+        $text = $this->preprocessor->translateEnglishToIndonesian($text);
+        
+        // Tokenize
         $tokens = $this->preprocessor->tokenize($text);
+        
+        // Remove stopwords
+        $tokens = $this->preprocessor->removeStopwords($tokens);
+        
+        // Stemming
         $stemmed_tokens = $this->preprocessor->stemWords($tokens);
         $stemmed_text = implode(' ', $stemmed_tokens);
         

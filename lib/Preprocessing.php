@@ -213,21 +213,4 @@ class Preprocessing {
         return implode(' ', $translatedTokens);
     }
 
-    public function preprocessText($text) {
-        // Preprocessing
-        $text = $this->convertEmoji($text);
-        $text = $this->convertEmoticons($text);
-        $text = $this->translateEnglishToIndonesian($text); // Tambahkan terjemahan
-        $text = $this->cleanText($text);
-        $text = $this->removeStopwords($text);
-        $tokens = $this->tokenize($text);
-        $stemmed_tokens = $this->stemWords($tokens);
-        $stemmed_text = implode(' ', $stemmed_tokens);
-        
-        return [
-            'tokens' => $tokens,
-            'stemmed_tokens' => $stemmed_tokens,
-            'stemmed_text' => $stemmed_text
-        ];
-    }
 }
