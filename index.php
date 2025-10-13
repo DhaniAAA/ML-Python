@@ -61,16 +61,29 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body feature-card">
                         <div class="feature-icon mb-4">
-                            <i class="bi bi-search"></i>
+                            <i class="bi bi-bar-chart-line"></i>
                         </div>
-                        <h4 class="card-title mb-3">Analisis Teks</h4>
-                        <p class="card-text text-muted">Masukkan teks berbahasa Indonesia untuk mengetahui sentimen yang terkandung dalam teks tersebut dengan akurasi tinggi.</p>
-                        <a href="pages/analyze.php" class="btn btn-outline-primary mt-3">Coba Sekarang</a>
+                        <h4 class="card-title mb-3">Modern Dashboard</h4>
+                        <p class="card-text text-muted">Dashboard modern dengan desain neumorphism, visualisasi interaktif, dan analisis sentimen real-time.</p>
+                        <a href="pages/dashboard.php" class="btn btn-outline-primary mt-3">Buka Dashboard</a>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body feature-card">
+                        <div class="feature-icon mb-4">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Analisis Teks</h4>
+                        <p class="card-text text-muted">Masukkan teks berbahasa Indonesia untuk mengetahui sentimen yang terkandung dalam teks tersebut dengan akurasi tinggi.</p>
+                        <a href="pages/predict.php" class="btn btn-outline-primary mt-3">Coba Sekarang</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body feature-card">
                         <div class="feature-icon mb-4">

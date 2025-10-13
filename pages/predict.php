@@ -1,425 +1,312 @@
 <?php
-// Load konfigurasi
 require_once '../includes/config.php';
-require_once '../lib/Preprocessing.php';
-require_once '../models/SentimentModel.php';
+$current_page = 'analyze';
+$page_title = 'Analisis Sentimen - Sentiment AI';
+include '../includes/header.php';
+?>
 
-// Inisialisasi variabel
-$input_text = '';
-$prediction = null;
-$error = '';
-$processing_time = 0;
-$word_importance = [];
-$preprocessed_text = '';
+<?php include '../includes/sidebar.php'; ?>
 
-// Proses formulir jika dikirim
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['text_input'])) {
+<!-- Main -->
+<main class="flex-1 p-4 sm:p-6 lg:p-8">
+    <?php include '../includes/mobile_nav.php'; ?>
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <nav class="flex items-center text-sm opacity-70 mb-2" aria-label="Breadcrumb">
+                        <a class="hover:underline" href="dashboard.php">Dashboard</a>
+                        <span class="mx-2">/</span>
+                        <span aria-current="page">Analisis Sentimen</span>
+                    </nav>
+                    <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Analisis Sentimen Teks</h1>
+                </div>
+                <button id="themeToggle" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition 
+                           bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
+                           shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                           dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]" aria-label="Toggle theme">
+                    <span class="material-symbols-outlined align-middle text-base sm:text-lg">dark_mode</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Alert Container -->
+        <div id="alertContainer" class="mb-4"></div>
+
+        <!-- Grid -->
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+            <!-- Input Section -->
+            <article class="xl:col-span-2 p-6 rounded-xl 
+                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <h2 class="text-xl font-bold mb-4">
+                    <span class="material-symbols-outlined align-middle mr-2">edit_note</span>
+                    Input Teks
+                </h2>
+                <textarea id="textInput" rows="8" 
+                          class="w-full p-4 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
+                                 shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
+                                 dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
+                                 border-0 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                          placeholder="Masukkan teks dalam bahasa Indonesia di sini..."></textarea>
+                
+                <div class="flex gap-3 mt-4">
+                    <button onclick="analyzeText()" class="flex-1 px-4 py-3 rounded-xl font-bold transition
+                                   bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
+                                   shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                                   dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28] focus-ring">
+                        <span class="material-symbols-outlined align-middle mr-2">search</span>
+                        Analisis Sentimen
+                    </button>
+                    <button onclick="clearText()" class="px-4 py-3 rounded-xl font-bold transition
+                                   bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
+                                   shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                                   dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28] focus-ring">
+                        <span class="material-symbols-outlined align-middle">close</span>
+                    </button>
+                </div>
+
+                <!-- Preprocessed Text -->
+                <div id="preprocessedSection" class="mt-4 hidden">
+                    <h3 class="text-sm font-bold mb-2 opacity-70">Teks Setelah Preprocessing:</h3>
+                    <div id="preprocessedText" class="p-4 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
+                                                       shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
+                                                       dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
+                                                       text-sm font-mono"></div>
+                </div>
+            </article>
+
+            <!-- Quick Info -->
+            <article class="p-6 rounded-xl 
+                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <h2 class="text-xl font-bold mb-4">
+                    <span class="material-symbols-outlined align-middle mr-2">info</span>
+                    Tentang
+                </h2>
+                <p class="text-sm opacity-70 mb-4">Analisis sentimen mengidentifikasi emosi dalam teks:</p>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-green-600">sentiment_satisfied</span>
+                        <span><strong>Positif:</strong> Sentimen baik/senang</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-yellow-600">sentiment_neutral</span>
+                        <span><strong>Netral:</strong> Sentimen biasa</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-red-600">sentiment_dissatisfied</span>
+                        <span><strong>Negatif:</strong> Sentimen buruk/sedih</span>
+                    </li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="mt-8 hidden">
+            <!-- Sentiment Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <article class="p-6 rounded-xl text-center
+                                bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                                shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                                dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                    <span class="material-symbols-outlined text-5xl text-green-600 mb-3 inline-block">sentiment_satisfied</span>
+                    <h3 class="text-lg font-bold mb-2">Positive</h3>
+                    <p class="text-3xl font-extrabold" id="positiveScore">0%</p>
+                    <div class="mt-3 h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div id="positiveBar" class="h-full bg-green-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </article>
+
+                <article class="p-6 rounded-xl text-center
+                                bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                                shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                                dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                    <span class="material-symbols-outlined text-5xl text-yellow-600 mb-3 inline-block">sentiment_neutral</span>
+                    <h3 class="text-lg font-bold mb-2">Neutral</h3>
+                    <p class="text-3xl font-extrabold" id="neutralScore">0%</p>
+                    <div class="mt-3 h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div id="neutralBar" class="h-full bg-yellow-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </article>
+
+                <article class="p-6 rounded-xl text-center
+                                bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                                shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                                dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                    <span class="material-symbols-outlined text-5xl text-red-600 mb-3 inline-block">sentiment_dissatisfied</span>
+                    <h3 class="text-lg font-bold mb-2">Negative</h3>
+                    <p class="text-3xl font-extrabold" id="negativeScore">0%</p>
+                    <div class="mt-3 h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div id="negativeBar" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Final Result -->
+            <article class="p-8 rounded-xl text-center
+                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <span id="resultIcon" class="material-symbols-outlined text-7xl mb-4 inline-block">sentiment_satisfied</span>
+                <h2 class="text-2xl font-bold mb-2">Hasil Analisis</h2>
+                <p class="text-5xl font-extrabold mb-4" id="resultSentiment">Positive</p>
+                <p class="text-sm opacity-70">Confidence: <span id="resultConfidence" class="font-bold">0%</span></p>
+                <p class="text-xs opacity-50 mt-4">Processing time: <span id="processingTime">0ms</span></p>
+            </article>
+
+            <!-- Word Importance -->
+            <article id="wordImportanceSection" class="mt-8 p-6 rounded-xl hidden
+                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
+                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
+                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <h2 class="text-xl font-bold mb-4">
+                    <span class="material-symbols-outlined align-middle mr-2">label</span>
+                    Kata-kata Berpengaruh
+                </h2>
+                <div id="wordImportanceList" class="flex flex-wrap gap-2"></div>
+            </article>
+        </section>
+    </div>
+</main>
+
+<script>
+function showAlert(message, type = 'info') {
+    const container = document.getElementById('alertContainer');
+    const colors = {
+        success: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
+        error: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
+        info: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
+    };
+    
+    const alert = document.createElement('div');
+    alert.className = `p-4 rounded-xl ${colors[type]} shadow-lg mb-4`;
+    alert.innerHTML = `
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    container.appendChild(alert);
+    setTimeout(() => alert.remove(), 5000);
+}
+
+function clearText() {
+    document.getElementById('textInput').value = '';
+    document.getElementById('resultsSection').classList.add('hidden');
+    document.getElementById('preprocessedSection').classList.add('hidden');
+}
+
+async function analyzeText() {
+    const text = document.getElementById('textInput').value.trim();
+    if (!text) {
+        showAlert('Silakan masukkan teks untuk dianalisis', 'error');
+        return;
+    }
+
+    showAlert('Menganalisis sentimen...', 'info');
+    const startTime = performance.now();
+
     try {
-        $input_text = $_POST['text_input'];
-        
-        // Validasi input
-        if (empty($input_text)) {
-            throw new Exception('Silakan masukkan teks yang akan dianalisis.');
-        }
-        
-        // Mulai hitung waktu
-        $start_time = microtime(true);
-        
-        // Instantiasi model sentimen
-        $model = new SentimentModel();
-        
-        // Preprocessing teks
-        $preprocessor = new Preprocessing();
-        $preprocessed_text = $preprocessor->processText($input_text);
-        
-        // Normalisasi spasi (hapus multiple spaces)
-        $preprocessed_text = preg_replace('/\s+/', ' ', $preprocessed_text);
-        $preprocessed_text = trim($preprocessed_text);
-        
-        // Analisis sentimen
-        $prediction = $model->analyze($preprocessed_text);
-        
-        // Hitung waktu proses
-        $end_time = microtime(true);
-        $processing_time = ($end_time - $start_time) * 1000; // dalam milidetik
-        
-        // Dapatkan kata-kata penting yang mempengaruhi sentimen
-        if (isset($prediction['word_scores']) && !empty($prediction['word_scores'])) {
-            // Urutkan berdasarkan nilai absolut skor (positif atau negatif)
-            uasort($prediction['word_scores'], function($a, $b) {
-                return abs($b) <=> abs($a);
-            });
-            
-            // Ambil 10 kata teratas
-            $word_importance = array_slice($prediction['word_scores'], 0, 10, true);
-        } elseif (isset($prediction['word_sentiment']) && !empty($prediction['word_sentiment'])) {
-            // Alternatif: gunakan word_sentiment jika tersedia
-            $word_scores = [];
-            foreach ($prediction['word_sentiment'] as $word => $data) {
-                if (isset($data['score'])) {
-                    $word_scores[$word] = $data['score'];
-                }
-            }
-            
-            // Urutkan berdasarkan nilai absolut skor
-            uasort($word_scores, function($a, $b) {
-                return abs($b) <=> abs($a);
-            });
-            
-            // Ambil 10 kata teratas
-            $word_importance = array_slice($word_scores, 0, 10, true);
-        }
-        
-    } catch (Exception $e) {
-        $error = $e->getMessage();
+        const formData = new FormData();
+        formData.append('text', text);
+
+        const response = await fetch('analyze.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) throw new Error('Analisis gagal');
+
+        const result = await response.json();
+        if (result.error) throw new Error(result.error);
+
+        const endTime = performance.now();
+        displayResults(result, endTime - startTime);
+        showAlert('Analisis berhasil!', 'success');
+
+    } catch (error) {
+        showAlert('Error: ' + error.message, 'error');
     }
 }
 
-// Warna untuk sentimen
-$sentimentColors = [
-    'positive' => 'success',
-    'negative' => 'danger',
-    'neutral' => 'warning'
-];
-
-// Terjemahan sentimen
-$sentimentTranslations = [
-    'positive' => 'Positif',
-    'negative' => 'Negatif',
-    'neutral' => 'Netral'
-];
-
-// Icon untuk sentimen
-$sentimentIcons = [
-    'positive' => 'emoji-smile',
-    'negative' => 'emoji-frown',
-    'neutral' => 'emoji-neutral'
-];
-?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediksi Sentimen - Analisis Sentimen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/css/navbar.css">
-    <link rel="stylesheet" href="../assets/css/style_prediksi.css">
-</head>
-<body>
-    <?php include('../includes/nav_template.php'); ?>
-
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none">Beranda</a></li>
-                        <li class="breadcrumb-item active">Prediksi</li>
-                    </ol>
-                </nav>
-                <h2 class="mt-2">Prediksi Sentimen</h2>
-            </div>
-        </div>
-
-        <?php if ($error): ?>
-        <div class="alert alert-danger shadow-sm">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <?php echo $error; ?>
-        </div>
-        <?php endif; ?>
-
-        <div class="row g-4">
-            <div class="col-md-7">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="bi bi-chat-text"></i> Masukkan Teks</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="">
-                            <div class="mb-3">
-                                <label for="text_input" class="form-label">Teks yang akan dianalisis:</label>
-                                <textarea class="form-control" id="text_input" name="text_input" rows="5" placeholder="Masukkan teks dalam bahasa Indonesia di sini..."><?php echo htmlspecialchars($input_text); ?></textarea>
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-search"></i> Analisis Sentimen
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <?php if (!empty($preprocessed_text)): ?>
-                        <div class="mt-4">
-                            <h6><i class="bi bi-gear"></i> Hasil Prediksi:</h6>
-                            <div class="text-processing">
-                                <?php echo htmlspecialchars($preprocessed_text); ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                
-                <?php if ($prediction): ?>
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="bi bi-bar-chart"></i> Skor Sentimen</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <?php foreach (['positive', 'neutral', 'negative'] as $sentiment): ?>
-                            <div class="col-md-4">
-                                <div class="card mb-2">
-                                    <div class="card-body p-3">
-                                        <h6 class="text-<?php echo $sentimentColors[$sentiment]; ?> mb-2">
-                                            <i class="bi bi-<?php echo $sentimentIcons[$sentiment]; ?>"></i> 
-                                            <?php echo $sentimentTranslations[$sentiment]; ?>
-                                        </h6>
-                                        
-                                        <?php 
-                                        $score = isset($prediction['probabilities'][$sentiment]) ? 
-                                                 $prediction['probabilities'][$sentiment] * 100 : 0;
-                                        ?>
-                                        
-                                        <div class="progress progress-bar-custom">
-                                            <div class="progress-bar bg-<?php echo $sentimentColors[$sentiment]; ?>" 
-                                                 role="progressbar" 
-                                                 style="width: <?php echo $score; ?>%" 
-                                                 aria-valuenow="<?php echo $score; ?>" 
-                                                 aria-valuemin="0" 
-                                                 aria-valuemax="100"></div>
-                                        </div>
-                                        <p class="text-end mb-0 mt-1">
-                                            <strong><?php echo number_format($score, 1); ?>%</strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                        
-                        <div class="alert alert-light border mt-3 mb-0">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-clock text-muted me-2"></i>
-                                </div>
-                                <div>
-                                    <small class="text-muted">Waktu pemrosesan: <?php echo number_format($processing_time, 2); ?> ms</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-            </div>
-            
-            <div class="col-md-5">
-                <?php if ($prediction): ?>
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="bi bi-emoji-smile"></i> Hasil Prediksi</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="sentiment-card">
-                            <?php
-                            $predictedSentiment = $prediction['sentiment'];
-                            $iconClass = $sentimentIcons[$predictedSentiment];
-                            $colorClass = $sentimentColors[$predictedSentiment];
-                            $sentimentText = $sentimentTranslations[$predictedSentiment];
-                            ?>
-                            
-                            <div class="sentiment-icon text-<?php echo $colorClass; ?>">
-                                <i class="bi bi-<?php echo $iconClass; ?>-fill"></i>
-                            </div>
-                            
-                            <h4>Teks ini terdeteksi memiliki sentimen</h4>
-                            <h2 class="text-<?php echo $colorClass; ?>"><?php echo $sentimentText; ?></h2>
-                            
-                            <div class="sentiment-score">
-                                <?php
-                                // Tentukan skor berdasarkan metode analisis
-                                $score = 0;
-                                if (isset($prediction['score'])) {
-                                    $score = $prediction['score'];
-                                } elseif (isset($prediction['probabilities'][$predictedSentiment])) {
-                                    // Gunakan nilai probabilitas sebagai skor jika tidak ada skor langsung
-                                    $score = $prediction['probabilities'][$predictedSentiment];
-                                }
-                                ?>
-                                Skor: <span class="text-<?php echo $colorClass; ?>"><?php echo number_format($score, 3); ?></span>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-outline-secondary" onclick="copyResults()">
-                                        <i class="bi bi-clipboard"></i> Salin Hasil
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <?php if (!empty($word_importance)): ?>
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="bi bi-list-ol"></i> Kata-kata yang Mempengaruhi</h5>
-                    </div>
-                    <div class="card-body word-importance">
-                        <?php foreach ($word_importance as $word => $score): 
-                            $sentimentClass = 'neutral';
-                            $scoreClass = 'neutral';
-                            if ($score > 0) {
-                                $sentimentClass = 'positive';
-                                $scoreClass = 'positive';
-                            } elseif ($score < 0) {
-                                $sentimentClass = 'negative';
-                                $scoreClass = 'negative';
-                            }
-                        ?>
-                        <div class="word-item word-<?php echo $sentimentClass; ?>">
-                            <span class="word-text"><?php echo htmlspecialchars($word); ?></span>
-                            <span class="word-score score-<?php echo $scoreClass; ?>"><?php echo number_format($score, 3); ?></span>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-                
-                <?php else: ?>
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="bi bi-info-circle"></i> Tentang Prediksi Sentimen</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- <div class="text-center mb-4">
-                            <img src="../assets/img/sentiment_illustration.svg" alt="Sentimen Analisis" style="max-width: 200px;" onerror="this.src='https://via.placeholder.com/200x150?text=Sentimen+Analisis'">
-                        </div> -->
-                        <p>Analisis sentimen adalah proses mengidentifikasi dan mengekstraksi pendapat dalam teks. Fitur prediksi ini memungkinkan Anda untuk:</p>
-                        <ul>
-                            <li>Menganalisis sentimen dari teks bahasa Indonesia</li>
-                            <li>Melihat skor untuk sentimen positif, negatif, dan netral</li>
-                            <li>Mengidentifikasi kata-kata kunci yang mempengaruhi hasil analisis</li>
-                        </ul>
-                        <p>Masukkan teks yang ingin Anda analisis pada form di sebelah kiri untuk memulai!</p>
-                    </div>
-                </div>
-                <?php endif; ?>
-            </div>
-        </div>
+function displayResults(result, time) {
+    // Show results
+    document.getElementById('resultsSection').classList.remove('hidden');
+    
+    // Update scores
+    const positive = (result.probabilities.positive * 100).toFixed(1);
+    const neutral = (result.probabilities.neutral * 100).toFixed(1);
+    const negative = (result.probabilities.negative * 100).toFixed(1);
+    
+    document.getElementById('positiveScore').textContent = positive + '%';
+    document.getElementById('positiveBar').style.width = positive + '%';
+    
+    document.getElementById('neutralScore').textContent = neutral + '%';
+    document.getElementById('neutralBar').style.width = neutral + '%';
+    
+    document.getElementById('negativeScore').textContent = negative + '%';
+    document.getElementById('negativeBar').style.width = negative + '%';
+    
+    // Update final result
+    const sentiment = result.sentiment;
+    const icons = {
+        positive: 'sentiment_satisfied',
+        neutral: 'sentiment_neutral',
+        negative: 'sentiment_dissatisfied'
+    };
+    const labels = {
+        positive: 'Positif',
+        neutral: 'Netral',
+        negative: 'Negatif'
+    };
+    
+    document.getElementById('resultIcon').textContent = icons[sentiment];
+    document.getElementById('resultSentiment').textContent = labels[sentiment];
+    document.getElementById('resultConfidence').textContent = Math.max(positive, neutral, negative) + '%';
+    document.getElementById('processingTime').textContent = time.toFixed(2) + 'ms';
+    
+    // Show preprocessed text
+    if (result.preprocessed_text) {
+        document.getElementById('preprocessedSection').classList.remove('hidden');
+        document.getElementById('preprocessedText').textContent = result.preprocessed_text;
+    }
+    
+    // Show word importance
+    if (result.word_scores) {
+        const section = document.getElementById('wordImportanceSection');
+        const list = document.getElementById('wordImportanceList');
+        section.classList.remove('hidden');
+        list.innerHTML = '';
         
-        <?php if (!$prediction): ?>
-        <!-- <div class="row mt-4 g-4">
-            <div class="col-lg-4">
-                <div class="card feature-card">
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
-                            <i class="bi bi-lightning-charge"></i>
-                        </div>
-                        <h5 class="card-title">Analisis Cepat</h5>
-                        <p class="card-text">Dapatkan hasil analisis sentimen dalam hitungan milidetik dengan model machine learning yang dioptimalkan.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="card feature-card">
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
-                            <i class="bi bi-translate"></i>
-                        </div>
-                        <h5 class="card-title">Khusus Bahasa Indonesia</h5>
-                        <p class="card-text">Model kami dilatih khusus untuk memahami nuansa bahasa Indonesia, termasuk slang dan bahasa gaul.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="card feature-card">
-                    <div class="card-body text-center">
-                        <div class="feature-icon">
-                            <i class="bi bi-bar-chart"></i>
-                        </div>
-                        <h5 class="card-title">Hasil Terperinci</h5>
-                        <p class="card-text">Lihat skor probabilitas untuk setiap sentimen dan kata-kata yang paling mempengaruhi hasil analisis.</p>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <?php endif; ?>
-    </div>
-
-    <footer class="bg-light mt-5 py-3">
-        <div class="container text-center">
-            <small class="text-muted">© <?php echo date('Y'); ?> Analisis Sentimen - Aplikasi Pendeteksi Sentimen Indonesia</small>
-        </div>
-    </footer>
-
-    <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            function fallbackCopyTextToClipboard(text) {
-                // Membuat elemen textarea sementara
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                
-                // Pastikan tidak terlihat
-                textArea.style.position = "fixed";
-                textArea.style.left = "-999999px";
-                textArea.style.top = "-999999px";
-                
-                document.body.appendChild(textArea);
-                
-                // Pilih dan salin isi textarea
-                textArea.focus();
-                textArea.select();
-                
-                let success = false;
-                try {
-                    success = document.execCommand('copy');
-                    if (success) {
-                        alert('Hasil analisis telah disalin ke clipboard!');
-                    } else {
-                        alert('Gagal menyalin hasil. Browser Anda mungkin tidak mendukung fitur ini.');
-                    }
-                } catch (err) {
-                    alert('Gagal menyalin hasil: ' + err);
-                }
-                
-                document.body.removeChild(textArea);
-            }
-            
-            function copyResults() {
-                <?php if (isset($prediction)): ?>
-                    const sentimentResult = 'Hasil Analisis Sentimen:\n' +
-                        'Teks: <?php echo addslashes(htmlspecialchars($input_text)); ?>\n' +
-                        'Sentimen: <?php echo $sentimentTranslations[$prediction['sentiment']]; ?>\n' +
-                        'Skor: <?php echo number_format($score, 3); ?>\n' +
-                        'Probabilitas:\n' +
-                        '- Positif: <?php echo number_format($prediction['probabilities']['positive'] * 100, 2); ?>%\n' +
-                        '- Netral: <?php echo number_format($prediction['probabilities']['neutral'] * 100, 2); ?>%\n' +
-                        '- Negatif: <?php echo number_format($prediction['probabilities']['negative'] * 100, 2); ?>%';
-                    
-                    try {
-                        // Metode asinkron
-                        navigator.clipboard.writeText(sentimentResult)
-                            .then(function() {
-                                alert('Hasil analisis telah disalin ke clipboard!');
-                            })
-                            .catch(function() {
-                                fallbackCopyTextToClipboard(sentimentResult);
-                            });
-                    } catch (err) {
-                        fallbackCopyTextToClipboard(sentimentResult);
-                    }
-                <?php endif; ?>
-            }
-        
-        // Aktifkan tooltips Bootstrap
-        document.addEventListener('DOMContentLoaded', function() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+        Object.entries(result.word_scores)
+            .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+            .slice(0, 15)
+            .forEach(([word, score]) => {
+                const color = score > 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' :
+                             score < 0 ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' :
+                             'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
+                const tag = document.createElement('span');
+                tag.className = `px-3 py-1 rounded-lg text-sm font-medium ${color}`;
+                tag.textContent = `${word} (${score.toFixed(3)})`;
+                list.appendChild(tag);
             });
-        });
-    </script>
-</body>
-</html> 
+    }
+    
+    // Scroll to results
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Keyboard shortcut
+document.getElementById('textInput').addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') {
+        analyzeText();
+    }
+});
+</script>
+
+<?php include '../includes/footer.php'; ?>

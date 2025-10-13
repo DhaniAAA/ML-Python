@@ -58,3 +58,6 @@ composer.phar
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Design
+design/
