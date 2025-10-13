@@ -31,17 +31,20 @@ models/*.dat
 
 # Data files
 data/uploads/*
+!data/uploads/.gitkeep
 
 # Test files
 data/testing/*
+!data/testing/.gitkeep
 *.test.*
 test_*.php
 test_*.py
 check_*.php
+note.txt
 notes.txt
 sample_*.php
 
-#debug
+# Debug files
 debug_emoji.log
 debug_*.log
 

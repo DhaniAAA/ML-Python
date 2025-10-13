@@ -1,9 +1,9 @@
 <?php
 // Tambahkan memory helper untuk meningkatkan batas memori
-require_once 'memory_helper.php';
-require_once 'vendor/autoload.php';
-require_once 'config.php';
-require_once 'lib/Preprocessing.php';
+require_once '../includes/memory_helper.php';
+require_once '../vendor/autoload.php';
+require_once '../includes/config.php';
+require_once '../lib/Preprocessing.php';
 
 use Phpml\FeatureExtraction\TokenCountVectorizer;
 use Phpml\Tokenization\WhitespaceTokenizer;
@@ -433,12 +433,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     <title>Training Model - Analisis Sentimen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="assets/css/style_dataset_view.css" rel="stylesheet">
-    <link href="assets/css/navbar.css" rel="stylesheet">
+    <link href="../assets/css/style_dataset_view.css" rel="stylesheet">
+    <link href="../assets/css/navbar.css" rel="stylesheet">
 </head>
 
 <body>
-    <?php include('nav_template.php'); ?>
+    <?php include('../includes/nav_template.php'); ?>
 
     <div class="container mt-4">
         <div class="row justify-content-center">

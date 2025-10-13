@@ -61,38 +61,48 @@ Aplikasi web untuk menganalisis sentimen teks menggunakan algoritma Naive Bayes 
 
 ```
 .
-├── assets/
+├── assets/           # Asset statis (CSS, JS, gambar)
 │   ├── css/
 │   └── js/
-├── data/
+├── data/            # Data dan resource
 │   ├── emoji_convert.json
 │   ├── emoticons.json
 │   ├── english_id.json
 │   ├── lexicon/
 │   ├── stopwords_id.txt
-│   ├── testing/      # File pengujian (tidak di-upload ke GitHub)
+│   ├── testing/     # File pengujian (tidak di-upload ke GitHub)
 │   └── uploads/
-├── lib/
+├── database/        # Database schema
+│   └── schema.sql
+├── includes/        # File konfigurasi dan helper
+│   ├── config.php
+│   ├── memory_helper.php
+│   └── nav_template.php
+├── lib/             # Library PHP custom
 │   ├── CountVectorizer.php
 │   ├── MyTokenCountVectorizer.php
 │   ├── NaiveBayes.php
 │   ├── Preprocessing.php
 │   └── Visualization.php
 ├── models/          # Model machine learning (file besar tidak di-upload ke GitHub)
-├── config.php
-├── index.php
-├── analyze.php
-├── predict.php
-├── predict.py
-├── train.php
-├── train.py
+├── pages/           # Halaman aplikasi
+│   ├── about.php
+│   ├── analyze.php
+│   ├── dataset.php 
+│   ├── download_dataset.php
+│   ├── predict.php
+│   ├── result.php
+│   └── train.php
+├── scripts/         # Python scripts
+│   ├── predict.py
+│   └── train.py
+├── index.php        # Halaman utama
 └── composer.json
 ```
 
 ## Catatan Penting
 
 Beberapa file tidak disertakan dalam repositori GitHub karena ukurannya yang besar atau karena merupakan file pengujian:
-
 1. File model machine learning di direktori `models/`:
    - `naive_bayes.dat`
    - `naive_bayes.pkl`

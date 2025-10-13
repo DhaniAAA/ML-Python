@@ -1,8 +1,8 @@
 <?php
 // Load konfigurasi
-require_once 'config.php';
-require_once 'lib/Preprocessing.php';
-require_once 'models/SentimentModel.php';
+require_once '../includes/config.php';
+require_once '../lib/Preprocessing.php';
+require_once '../models/SentimentModel.php';
 
 // Inisialisasi variabel
 $input_text = '';
@@ -31,6 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['text_input'])) {
         // Preprocessing teks
         $preprocessor = new Preprocessing();
         $preprocessed_text = $preprocessor->processText($input_text);
+        
+        // Normalisasi spasi (hapus multiple spaces)
+        $preprocessed_text = preg_replace('/\s+/', ' ', $preprocessed_text);
+        $preprocessed_text = trim($preprocessed_text);
         
         // Analisis sentimen
         $prediction = $model->analyze($preprocessed_text);
@@ -100,11 +104,11 @@ $sentimentIcons = [
     <title>Prediksi Sentimen - Analisis Sentimen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="assets/css/navbar.css">
-    <link rel="stylesheet" href="assets/css/style_prediksi.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/style_prediksi.css">
 </head>
 <body>
-    <?php include('nav_template.php'); ?>
+    <?php include('../includes/nav_template.php'); ?>
 
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -289,7 +293,7 @@ $sentimentIcons = [
                     </div>
                     <div class="card-body">
                         <!-- <div class="text-center mb-4">
-                            <img src="assets/img/sentiment_illustration.svg" alt="Sentimen Analisis" style="max-width: 200px;" onerror="this.src='https://via.placeholder.com/200x150?text=Sentimen+Analisis'">
+                            <img src="../assets/img/sentiment_illustration.svg" alt="Sentimen Analisis" style="max-width: 200px;" onerror="this.src='https://via.placeholder.com/200x150?text=Sentimen+Analisis'">
                         </div> -->
                         <p>Analisis sentimen adalah proses mengidentifikasi dan mengekstraksi pendapat dalam teks. Fitur prediksi ini memungkinkan Anda untuk:</p>
                         <ul>

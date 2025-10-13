@@ -1,8 +1,8 @@
 <?php
 // Load konfigurasi
-require_once 'config.php';
-require_once 'lib/Preprocessing.php';
-require_once 'memory_helper.php';
+require_once '../includes/config.php';
+require_once '../lib/Preprocessing.php';
+require_once '../includes/memory_helper.php';
 
 // Tingkatkan batas memori
 increaseMemoryLimit();
@@ -44,7 +44,7 @@ function calculatePythonModelMetrics($dataset_id) {
         // Jalankan training model Python
         $output = [];
         $returnVar = 0;
-        exec("python train.py {$dataset_id} 2>&1", $output, $returnVar);
+        exec("python ../scripts/train.py {$dataset_id} 2>&1", $output, $returnVar);
         
         if ($returnVar !== 0) {
             error_log("Error running Python training: " . implode("\n", $output));
@@ -310,16 +310,16 @@ $sentimentTranslations = [
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- CSS -->
-    <!-- <link href="assets/css/style.css" rel="stylesheet"> -->
-    <link rel="stylesheet" href="assets/css/style_dataset_view.css">
-    <link rel="stylesheet" href="assets/css/navbar.css">
+    <!-- <link href="../assets/css/style.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="../assets/css/style_dataset_view.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.5/build/d3.layout.cloud.min.js"></script>
 </head>
 <body>
-    <?php include('nav_template.php'); ?>
+    <?php include('../includes/nav_template.php'); ?>
 
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">

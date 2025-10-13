@@ -3,7 +3,7 @@
 session_start();
 
 // Load konfigurasi dasar
-require_once 'config.php';
+require_once '../includes/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -13,12 +13,12 @@ require_once 'config.php';
     <title>Tentang - Analisis Sentimen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- <link href="assets/css/style.css" rel="stylesheet"> -->
-    <link href="assets/css/style_dataset_view.css" rel="stylesheet">
-    <link href="assets/css/navbar.css" rel="stylesheet">
+    <!-- <link href="../assets/css/style.css" rel="stylesheet"> -->
+    <link href="../assets/css/style_dataset_view.css" rel="stylesheet">
+    <link href="../assets/css/navbar.css" rel="stylesheet">
 </head>
 <body>
-    <?php include('nav_template.php'); ?>
+    <?php include('../includes/nav_template.php'); ?>
 
     <div class="container mt-4">
         <div class="row justify-content-center">
@@ -224,7 +224,7 @@ require_once 'config.php';
                     <div class="card-body">
                         <div class="row align-items-center mb-4">
                             <div class="col-md-3 text-center">
-                                <img src="assets/img/21876.jpg" alt="Foto Pengembang" class="img-fluid rounded-circle mb-3" style="max-width: 150px; height: auto;">
+                                <img src="../assets/img/21876.jpg" alt="Foto Pengembang" class="img-fluid rounded-circle mb-3" style="max-width: 150px; height: auto;">
                             </div>
                             <div class="col-md-9">
                                 <h4>Ramadhani</h4>

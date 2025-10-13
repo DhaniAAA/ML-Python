@@ -22,7 +22,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <?php include('nav_template.php'); ?>
+    <?php include('includes/nav_template.php'); ?>
 
     <!-- Hero Section -->
     <div class="hero-section text-white" data-aos="fade-up">
@@ -32,10 +32,10 @@
                     <h1 class="display-4 fw-bold mb-4">Analisis Sentimen Bahasa Indonesia</h1>
                     <p class="lead mb-4">Platform analisis sentimen yang membantu Anda memahami emosi dan pendapat dalam teks berbahasa Indonesia menggunakan teknologi machine learning canggih.</p>
                     <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                        <a href="train.php" class="btn btn-light btn-lg px-4 me-2">
+                        <a href="pages/train.php" class="btn btn-light btn-lg px-4 me-2">
                             <i class="bi bi-search me-2"></i>Mulai Training
                         </a>
-                        <a href="about.php" class="btn btn-outline-light btn-lg px-4">
+                        <a href="pages/about.php" class="btn btn-outline-light btn-lg px-4">
                             <i class="bi bi-info-circle me-2"></i>Pelajari Selengkapnya
                         </a>
                     </div>
@@ -65,7 +65,7 @@
                         </div>
                         <h4 class="card-title mb-3">Analisis Teks</h4>
                         <p class="card-text text-muted">Masukkan teks berbahasa Indonesia untuk mengetahui sentimen yang terkandung dalam teks tersebut dengan akurasi tinggi.</p>
-                        <a href="analyze.php" class="btn btn-outline-primary mt-3">Coba Sekarang</a>
+                        <a href="pages/analyze.php" class="btn btn-outline-primary mt-3">Coba Sekarang</a>
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
                         </div>
                         <h4 class="card-title mb-3">Training Model</h4>
                         <p class="card-text text-muted">Upload dataset Anda sendiri untuk melatih model analisis sentimen yang lebih akurat sesuai kebutuhan Anda.</p>
-                        <a href="train.php" class="btn btn-outline-primary mt-3">Latih Model</a>
+                        <a href="pages/train.php" class="btn btn-outline-primary mt-3">Latih Model</a>
                     </div>
                 </div>
             </div>

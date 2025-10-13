@@ -1,6 +1,6 @@
 <?php
 // Load konfigurasi
-require_once 'config.php';
+require_once '../includes/config.php';
 
 // Cek apakah ada hasil analisis di session
 if (!isset($_SESSION['analysis_result'])) {
@@ -37,7 +37,7 @@ $wordCloudData = $visualization->generateWordCloudData($result['word_sentiment']
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasil Analisis - Analisis Sentimen</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 </head>

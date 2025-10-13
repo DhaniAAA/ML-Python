@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 // Log semua error ke file
 ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php_error.log');
+ini_set('error_log', __DIR__ . '/../php_error.log');
 
 // Import kelas yang diperlukan (harus berada di level global)
 use Phpml\FeatureExtraction\TokenCountVectorizer;
@@ -13,7 +13,7 @@ use Phpml\Tokenization\WhitespaceTokenizer;
 
 // Logger sederhana untuk debugging
 function debug_log($message, $data = null) {
-    $log_file = __DIR__ . '/debug_analyze.log';
+    $log_file = __DIR__ . '/../debug_analyze.log';
     $timestamp = date('Y-m-d H:i:s');
     $log_message = "[$timestamp] $message";
     
@@ -29,35 +29,35 @@ debug_log("===== Mulai eksekusi analyze.php =====");
 
 try {
     // Cek apakah memory_helper.php ada
-    if (!file_exists('memory_helper.php')) {
+    if (!file_exists('../includes/memory_helper.php')) {
         throw new Exception('File memory_helper.php tidak ditemukan!');
     }
     debug_log("File memory_helper.php ada");
     
     // Tambahkan memory helper untuk meningkatkan batas memori
-    require_once 'memory_helper.php';
+    require_once '../includes/memory_helper.php';
     debug_log("memory_helper.php berhasil diinclude");
     
     // Cek file-file yang diperlukan
-    if (!file_exists('vendor/autoload.php')) {
+    if (!file_exists('../vendor/autoload.php')) {
         throw new Exception('File vendor/autoload.php tidak ditemukan!');
     }
     debug_log("File vendor/autoload.php ada");
     
-    if (!file_exists('config.php')) {
+    if (!file_exists('../includes/config.php')) {
         throw new Exception('File config.php tidak ditemukan!');
     }
     debug_log("File config.php ada");
     
-    if (!file_exists('models/SentimentModel.php')) {
+    if (!file_exists('../models/SentimentModel.php')) {
         throw new Exception('File models/SentimentModel.php tidak ditemukan!');
     }
     debug_log("File models/SentimentModel.php ada");
     
     // Include file-file yang diperlukan
-    require_once 'vendor/autoload.php';
-    require_once 'config.php';
-    require_once 'models/SentimentModel.php';
+    require_once '../vendor/autoload.php';
+    require_once '../includes/config.php';
+    require_once '../models/SentimentModel.php';
     debug_log("Semua file berhasil diinclude");
 
     // Set header JSON
