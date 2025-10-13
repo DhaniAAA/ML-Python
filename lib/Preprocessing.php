@@ -45,8 +45,9 @@ class Preprocessing {
      */
     public function processText($text) {
         $text = $this->convertEmoji($text);
+        $text = $this->convertEmoticons($text);
         $text = $this->cleanText($text);
-        $text = $this->translateEnglishToIndonesian($text); // Tambahkan terjemahan
+        $text = $this->translateEnglishToIndonesian($text); // Terjemahkan setelah cleaning
         $tokens = $this->tokenize($text);
         $tokens = $this->removeStopwords($tokens);
         $tokens = $this->stemWords($tokens);

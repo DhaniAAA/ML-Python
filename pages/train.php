@@ -219,7 +219,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $processed_texts = []; // Array untuk menyimpan teks yang sudah diproses untuk deteksi duplikat
 
         // Load lexicon sekali saja di luar loop
-        $lexicon = file_exists('data/lexicon/lexicon.txt') ? file('data/lexicon/lexicon.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
+        $lexicon_path = __DIR__ . '/../data/lexicon/lexicon.txt';
+        if (!file_exists($lexicon_path)) {
+            throw new Exception('File lexicon tidak ditemukan di: ' . $lexicon_path);
+        }
+        
+        $lexicon = file($lexicon_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         // Parse lexicon file
         foreach ($lexicon as $line) {
@@ -228,6 +233,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $lexicon_scores[trim($parts[0])] = (int)trim($parts[1]);
             }
         }
+
+        // Log jumlah kata dalam lexicon untuk debugging
+        error_log("Jumlah kata dalam lexicon: " . count($lexicon_scores));
 
         // Bebaskan memori
         unset($lexicon);
@@ -273,12 +281,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Labeling berdasarkan lexicon
                 $total_score = 0;
+                $matched_words = []; // Untuk debugging
 
-                // Hitung skor total
-                foreach ($tokens as $token) {
+                // Hitung skor total menggunakan stemmed tokens
+                foreach ($stemmed_tokens as $token) {
                     if (isset($lexicon_scores[$token])) {
                         $total_score += $lexicon_scores[$token];
+                        $matched_words[] = $token . '(' . $lexicon_scores[$token] . ')';
                     }
+                }
+
+                // Log untuk debugging (hanya 10 sample pertama)
+                if ($sample_count < 10) {
+                    error_log("Sample #$sample_count - Matched words: " . implode(', ', $matched_words) . " | Total score: $total_score");
                 }
 
                 // Tentukan label berdasarkan skor
@@ -321,6 +336,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($documents)) {
             throw new Exception('Dataset kosong');
         }
+
+        // Hitung distribusi label untuk debugging
+        $label_counts = array_count_values($labels);
+        $positive_count = isset($label_counts['positive']) ? $label_counts['positive'] : 0;
+        $negative_count = isset($label_counts['negative']) ? $label_counts['negative'] : 0;
+        $neutral_count = isset($label_counts['neutral']) ? $label_counts['neutral'] : 0;
+        
+        error_log("Distribusi Label - Positive: $positive_count, Negative: $negative_count, Neutral: $neutral_count");
 
         // Update jumlah sampel di tabel datasets
         $stmt = $conn->prepare("UPDATE datasets SET sample_count = ?, status = 'completed' WHERE id = ?");
@@ -433,7 +456,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     <title>Training Model - Analisis Sentimen</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="../assets/css/style_dataset_view.css" rel="stylesheet">
+    <link href="../assets/css/style_dataset.css" rel="stylesheet">
     <link href="../assets/css/navbar.css" rel="stylesheet">
 </head>
 
@@ -542,7 +565,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                                                 <td><i class="bi bi-calendar-date me-1"></i><?php echo date('d/m/Y H:i', strtotime($dataset['created_at'])); ?></td>
                                                 <td>
                                                     <div class="d-flex justify-content-center gap-2">
-                                                        <a href="dataset_view.php?id=<?php echo $dataset['id']; ?>" class="btn btn-sm btn-info btn-icon" data-bs-toggle="tooltip" title="Lihat detail dataset">
+                                                        <a href="dataset.php?id=<?php echo $dataset['id']; ?>" class="btn btn-sm btn-info btn-icon" data-bs-toggle="tooltip" title="Lihat detail dataset">
                                                             <i class="bi bi-eye"></i>Detail
                                                         </a>
                                                         <a href="train.php?action=delete&id=<?php echo $dataset['id']; ?>" class="btn btn-sm btn-danger btn-icon"

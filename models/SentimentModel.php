@@ -52,7 +52,7 @@ class SentimentModel {
      */
     private function loadVocabulary() {
         $this->vocabulary = [];
-        $vocabularyPath = __DIR__ . '/vectorizer.json';
+        $vocabularyPath = __DIR__ . '../model/vectorizer.json';
         
         if (file_exists($vocabularyPath)) {
             $json = file_get_contents($vocabularyPath);
@@ -69,7 +69,7 @@ class SentimentModel {
      */
     private function loadClassifier() {
         $this->classifier = null;
-        $modelPath = __DIR__ . '/naive_bayes.dat';
+        $modelPath = __DIR__ . '../model/naive_bayes.dat';
         
         if (file_exists($modelPath)) {
             // Cek ukuran file

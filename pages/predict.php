@@ -151,7 +151,7 @@ $sentimentIcons = [
                         
                         <?php if (!empty($preprocessed_text)): ?>
                         <div class="mt-4">
-                            <h6><i class="bi bi-gear"></i> Hasil Preprocessing:</h6>
+                            <h6><i class="bi bi-gear"></i> Hasil Prediksi:</h6>
                             <div class="text-processing">
                                 <?php echo htmlspecialchars($preprocessed_text); ?>
                             </div>

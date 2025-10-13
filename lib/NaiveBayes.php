@@ -16,7 +16,7 @@ class NaiveBayes {
         $this->class_doc_counts = array();
         $this->total_docs = 0;
         // Load lexicon
-        $this->lexicon = json_decode(file_get_contents('data/lexicon.json'), true);
+        $this->lexicon = json_decode(file_get_contents('../data/lexicon/lexicon.txt'), true);
     }
     
     public function train($documents, $labels) {
