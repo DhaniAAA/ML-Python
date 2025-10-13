@@ -24,7 +24,7 @@ ENV/
 
 # Log files
 *.log
-
+*.md
 # Model files (too large for GitHub)
 models/*.pkl
 models/*.dat
