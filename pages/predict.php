@@ -23,7 +23,7 @@ include '../includes/header.php';
                     </nav>
                     <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Analisis Sentimen Teks</h1>
                 </div>
-                <button id="themeToggle" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition 
+                <button id="themeToggle" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition
                            bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]" aria-label="Toggle theme">
@@ -38,7 +38,7 @@ include '../includes/header.php';
         <!-- Grid -->
         <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
             <!-- Input Section -->
-            <article class="xl:col-span-2 p-6 rounded-xl 
+            <article class="xl:col-span-2 p-6 rounded-xl
                             bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
                             shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
                             dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
@@ -46,13 +46,13 @@ include '../includes/header.php';
                     <span class="material-symbols-outlined align-middle mr-2">edit_note</span>
                     Input Teks
                 </h2>
-                <textarea id="textInput" rows="8" 
-                          class="w-full p-4 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
+                <textarea id="textInput" rows="8"
+                    class="w-full p-4 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
                                  shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
                                  dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
                                  border-0 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          placeholder="Masukkan teks dalam bahasa Indonesia di sini..."></textarea>
-                
+                    placeholder="Masukkan teks dalam bahasa Indonesia di sini..."></textarea>
+
                 <div class="flex gap-3 mt-4">
                     <button onclick="analyzeText()" class="flex-1 px-4 py-3 rounded-xl font-bold transition
                                    bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
@@ -80,7 +80,7 @@ include '../includes/header.php';
             </article>
 
             <!-- Quick Info -->
-            <article class="p-6 rounded-xl 
+            <article class="p-6 rounded-xl
                             bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
                             shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
                             dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
@@ -175,138 +175,141 @@ include '../includes/header.php';
 </main>
 
 <script>
-function showAlert(message, type = 'info') {
-    const container = document.getElementById('alertContainer');
-    const colors = {
-        success: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-        error: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
-        info: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
-    };
-    
-    const alert = document.createElement('div');
-    alert.className = `p-4 rounded-xl ${colors[type]} shadow-lg mb-4`;
-    alert.innerHTML = `
+    function showAlert(message, type = 'info') {
+        const container = document.getElementById('alertContainer');
+        const colors = {
+            success: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
+            error: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
+            info: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
+        };
+
+        const alert = document.createElement('div');
+        alert.className = `p-4 rounded-xl ${colors[type]} shadow-lg mb-4`;
+        alert.innerHTML = `
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span>
             <span>${message}</span>
         </div>
     `;
-    container.appendChild(alert);
-    setTimeout(() => alert.remove(), 5000);
-}
-
-function clearText() {
-    document.getElementById('textInput').value = '';
-    document.getElementById('resultsSection').classList.add('hidden');
-    document.getElementById('preprocessedSection').classList.add('hidden');
-}
-
-async function analyzeText() {
-    const text = document.getElementById('textInput').value.trim();
-    if (!text) {
-        showAlert('Silakan masukkan teks untuk dianalisis', 'error');
-        return;
+        container.appendChild(alert);
+        setTimeout(() => alert.remove(), 5000);
     }
 
-    showAlert('Menganalisis sentimen...', 'info');
-    const startTime = performance.now();
-
-    try {
-        const formData = new FormData();
-        formData.append('text', text);
-
-        const response = await fetch('analyze.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) throw new Error('Analisis gagal');
-
-        const result = await response.json();
-        if (result.error) throw new Error(result.error);
-
-        const endTime = performance.now();
-        displayResults(result, endTime - startTime);
-        showAlert('Analisis berhasil!', 'success');
-
-    } catch (error) {
-        showAlert('Error: ' + error.message, 'error');
+    function clearText() {
+        document.getElementById('textInput').value = '';
+        document.getElementById('resultsSection').classList.add('hidden');
+        document.getElementById('preprocessedSection').classList.add('hidden');
     }
-}
 
-function displayResults(result, time) {
-    // Show results
-    document.getElementById('resultsSection').classList.remove('hidden');
-    
-    // Update scores
-    const positive = (result.probabilities.positive * 100).toFixed(1);
-    const neutral = (result.probabilities.neutral * 100).toFixed(1);
-    const negative = (result.probabilities.negative * 100).toFixed(1);
-    
-    document.getElementById('positiveScore').textContent = positive + '%';
-    document.getElementById('positiveBar').style.width = positive + '%';
-    
-    document.getElementById('neutralScore').textContent = neutral + '%';
-    document.getElementById('neutralBar').style.width = neutral + '%';
-    
-    document.getElementById('negativeScore').textContent = negative + '%';
-    document.getElementById('negativeBar').style.width = negative + '%';
-    
-    // Update final result
-    const sentiment = result.sentiment;
-    const icons = {
-        positive: 'sentiment_satisfied',
-        neutral: 'sentiment_neutral',
-        negative: 'sentiment_dissatisfied'
-    };
-    const labels = {
-        positive: 'Positif',
-        neutral: 'Netral',
-        negative: 'Negatif'
-    };
-    
-    document.getElementById('resultIcon').textContent = icons[sentiment];
-    document.getElementById('resultSentiment').textContent = labels[sentiment];
-    document.getElementById('resultConfidence').textContent = Math.max(positive, neutral, negative) + '%';
-    document.getElementById('processingTime').textContent = time.toFixed(2) + 'ms';
-    
-    // Show preprocessed text
-    if (result.preprocessed_text) {
-        document.getElementById('preprocessedSection').classList.remove('hidden');
-        document.getElementById('preprocessedText').textContent = result.preprocessed_text;
-    }
-    
-    // Show word importance
-    if (result.word_scores) {
-        const section = document.getElementById('wordImportanceSection');
-        const list = document.getElementById('wordImportanceList');
-        section.classList.remove('hidden');
-        list.innerHTML = '';
-        
-        Object.entries(result.word_scores)
-            .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
-            .slice(0, 15)
-            .forEach(([word, score]) => {
-                const color = score > 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' :
-                             score < 0 ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' :
-                             'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
-                const tag = document.createElement('span');
-                tag.className = `px-3 py-1 rounded-lg text-sm font-medium ${color}`;
-                tag.textContent = `${word} (${score.toFixed(3)})`;
-                list.appendChild(tag);
+    async function analyzeText() {
+        const text = document.getElementById('textInput').value.trim();
+        if (!text) {
+            showAlert('Silakan masukkan teks untuk dianalisis', 'error');
+            return;
+        }
+
+        showAlert('Menganalisis sentimen...', 'info');
+        const startTime = performance.now();
+
+        try {
+            const formData = new FormData();
+            formData.append('text', text);
+
+            const response = await fetch('analyze.php', {
+                method: 'POST',
+                body: formData
             });
-    }
-    
-    // Scroll to results
-    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
 
-// Keyboard shortcut
-document.getElementById('textInput').addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'Enter') {
-        analyzeText();
+            if (!response.ok) throw new Error('Analisis gagal');
+
+            const result = await response.json();
+            if (result.error) throw new Error(result.error);
+
+            const endTime = performance.now();
+            displayResults(result, endTime - startTime);
+            showAlert('Analisis berhasil!', 'success');
+
+        } catch (error) {
+            showAlert('Error: ' + error.message, 'error');
+        }
     }
-});
+
+    function displayResults(result, time) {
+        // Show results
+        document.getElementById('resultsSection').classList.remove('hidden');
+
+        // Update scores
+        const positive = (result.probabilities.positive * 100).toFixed(1);
+        const neutral = (result.probabilities.neutral * 100).toFixed(1);
+        const negative = (result.probabilities.negative * 100).toFixed(1);
+
+        document.getElementById('positiveScore').textContent = positive + '%';
+        document.getElementById('positiveBar').style.width = positive + '%';
+
+        document.getElementById('neutralScore').textContent = neutral + '%';
+        document.getElementById('neutralBar').style.width = neutral + '%';
+
+        document.getElementById('negativeScore').textContent = negative + '%';
+        document.getElementById('negativeBar').style.width = negative + '%';
+
+        // Update final result
+        const sentiment = result.sentiment;
+        const icons = {
+            positive: 'sentiment_satisfied',
+            neutral: 'sentiment_neutral',
+            negative: 'sentiment_dissatisfied'
+        };
+        const labels = {
+            positive: 'Positif',
+            neutral: 'Netral',
+            negative: 'Negatif'
+        };
+
+        document.getElementById('resultIcon').textContent = icons[sentiment];
+        document.getElementById('resultSentiment').textContent = labels[sentiment];
+        document.getElementById('resultConfidence').textContent = Math.max(positive, neutral, negative) + '%';
+        document.getElementById('processingTime').textContent = time.toFixed(2) + 'ms';
+
+        // Show preprocessed text
+        if (result.preprocessed_text) {
+            document.getElementById('preprocessedSection').classList.remove('hidden');
+            document.getElementById('preprocessedText').textContent = result.preprocessed_text;
+        }
+
+        // Show word importance
+        if (result.word_scores) {
+            const section = document.getElementById('wordImportanceSection');
+            const list = document.getElementById('wordImportanceList');
+            section.classList.remove('hidden');
+            list.innerHTML = '';
+
+            Object.entries(result.word_scores)
+                .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+                .slice(0, 15)
+                .forEach(([word, score]) => {
+                    const color = score > 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' :
+                        score < 0 ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' :
+                        'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
+                    const tag = document.createElement('span');
+                    tag.className = `px-3 py-1 rounded-lg text-sm font-medium ${color}`;
+                    tag.textContent = `${word} (${score.toFixed(3)})`;
+                    list.appendChild(tag);
+                });
+        }
+
+        // Scroll to results
+        document.getElementById('resultsSection').scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+        });
+    }
+
+    // Keyboard shortcut
+    document.getElementById('textInput').addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'Enter') {
+            analyzeText();
+        }
+    });
 </script>
 
 <?php include '../includes/footer.php'; ?>

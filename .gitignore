@@ -22,18 +22,17 @@ ENV/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Log files
 *.log
 *.md
-# Model files (too large for GitHub)
 models/*.pkl
 models/*.dat
+.pages/models/*.dat
+.pages/models/*.pkl
 
-# Data files
+*.png
 data/uploads/*
 !data/uploads/.gitkeep
 
-# Test files
 data/testing/*
 !data/testing/.gitkeep
 *.test.*
@@ -44,20 +43,29 @@ note.txt
 notes.txt
 sample_*.php
 
-# Debug files
 debug_emoji.log
 debug_*.log
-*.log  
-# Environment variables
+*.log
 .env
+.env.*
+.env.local
+.env.development
+.env.production
 
-# PHP specific
 vendor/
 composer.phar
+composer.lock
 
-# OS specific
 .DS_Store
 Thumbs.db
+.cache/
+cache/
+tmp/
+*.tmp
+coverage/
+reports/
+node_modules/
+uploads/
 
 # Design
 design/

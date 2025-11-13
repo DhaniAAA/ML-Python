@@ -7,6 +7,7 @@ require_once '../includes/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +18,7 @@ require_once '../includes/config.php';
     <link href="../assets/css/style_dataset_view.css" rel="stylesheet">
     <link href="../assets/css/navbar.css" rel="stylesheet">
 </head>
+
 <body>
     <?php include('../includes/nav_template.php'); ?>
 
@@ -32,7 +34,7 @@ require_once '../includes/config.php';
                         <p class="lead">
                             Analisis sentimen adalah proses menganalisis teks digital untuk menentukan apakah emosi atau perasaan yang terkandung di dalamnya positif, negatif, atau netral.
                         </p>
-                        
+
                         <div class="row mt-4">
                             <div class="col-md-4 mb-4">
                                 <div class="card h-100 border-0 shadow-sm">
@@ -68,7 +70,7 @@ require_once '../includes/config.php';
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- <h4 class="mb-3 mt-4">Manfaat Analisis Sentimen</h4>
                         <div class="row">
                             <div class="col-md-6">
@@ -86,11 +88,11 @@ require_once '../includes/config.php';
                                 </ul>
                             </div>
                         </div> -->
-                        
+
                         <h4 class="mb-3 mt-4">Tentang Aplikasi</h4>
                         <p>
-                            Aplikasi Analisis Sentimen ini dirancang untuk menganalisis teks dalam Bahasa Indonesia menggunakan algoritma Naive Bayes. 
-                            Aplikasi ini dapat memproses teks dari media sosial, ulasan produk, komentar, atau sumber teks lainnya untuk 
+                            Aplikasi Analisis Sentimen ini dirancang untuk menganalisis teks dalam Bahasa Indonesia menggunakan algoritma Naive Bayes.
+                            Aplikasi ini dapat memproses teks dari media sosial, ulasan produk, komentar, atau sumber teks lainnya untuk
                             mengategorikan sentimen setiap kalimat sebagai positif, negatif, atau netral.
                         </p>
                         <p>
@@ -124,7 +126,7 @@ require_once '../includes/config.php';
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Tata Cara Penggunaan -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -199,7 +201,7 @@ require_once '../includes/config.php';
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="alert alert-info mt-3">
                             <div class="d-flex">
                                 <div class="me-3">
@@ -215,7 +217,7 @@ require_once '../includes/config.php';
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Informasi Pengembang -->
                 <!-- <div class="card mb-4">
                     <div class="card-header">
@@ -237,7 +239,7 @@ require_once '../includes/config.php';
                                 </div>
                             </div>
                         </div>
-                        
+
                         <h5 class="mt-4 mb-3">Ucapan Terima Kasih</h5>
                         <p>
                             Terima kasih kepada semua pihak yang telah berkontribusi dalam pengembangan aplikasi ini:
@@ -261,6 +263,7 @@ require_once '../includes/config.php';
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
 </body>
-</html> 
+
+</html>

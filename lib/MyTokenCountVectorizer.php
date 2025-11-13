@@ -10,6 +10,7 @@ use Phpml\FeatureExtraction\StopWords;
 class MyTokenCountVectorizer extends TokenCountVectorizer
 {
     private $customVocabulary = [];
+    private $maxNgram = 1;
 
     /**
      * Set vocabulary manually (for use with saved models)
@@ -20,6 +21,11 @@ class MyTokenCountVectorizer extends TokenCountVectorizer
     public function setVocabulary(array $vocabulary): void
     {
         $this->customVocabulary = $vocabulary;
+    }
+
+    public function setMaxNgram(int $n): void
+    {
+        $this->maxNgram = max(1, min(3, $n));
     }
 
     /**
@@ -36,6 +42,7 @@ class MyTokenCountVectorizer extends TokenCountVectorizer
         foreach ($samples as $sample) {
             $counts = [];
             $tokens = $this->getTokenizer()->tokenize($sample);
+            $tokens = $this->generateNgrams($tokens, $this->maxNgram);
             
             // Initialize counts for all vocabulary terms
             foreach ($this->customVocabulary as $term => $index) {
@@ -73,4 +80,18 @@ class MyTokenCountVectorizer extends TokenCountVectorizer
         
         return $property->getValue($this);
     }
-} 
+
+    private function generateNgrams(array $tokens, int $n): array
+    {
+        if ($n <= 1) return $tokens;
+        $result = $tokens;
+        $count = count($tokens);
+        for ($k = 2; $k <= $n; $k++) {
+            for ($i = 0; $i <= $count - $k; $i++) {
+                $gram = implode('_', array_slice($tokens, $i, $k));
+                $result[] = $gram;
+            }
+        }
+        return $result;
+    }
+}

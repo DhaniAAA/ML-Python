@@ -1,5 +1,8 @@
 body {
     background-color: #f8f9fa;
+    --brand-primary: #4F46E5;
+    --brand-secondary: #0EA5E9;
+    --brand-accent: #22C55E;
 }
 
 .navbar {
@@ -56,6 +59,14 @@ textarea.form-control {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Micro animations */
+.hover-elevate { transition: all .2s ease; }
+.hover-elevate:hover { box-shadow: 0 12px 24px rgba(0,0,0,.08); transform: translateY(-1px); }
+
+/* Accessibility helpers */
+.focus-ring:focus-visible { outline: 2px solid rgba(79,70,229,.7); outline-offset: 2px; }
+.no-underline { text-decoration: none; }
 
 /* Responsif */
 @media (max-width: 768px) {
