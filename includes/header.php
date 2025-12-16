@@ -7,58 +7,164 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script>
+<script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        primary: "#4F46E5",
-                        secondary: "#0EA5E9",
-                        accent: "#22C55E",
-                        surface: "#ffffff",
-                        surfaceDark: "#111827",
-                        "background-light": "#f5f7fb",
-                        "background-dark": "#0f172a",
-                        "text-light": "#1F2937",
-                        "text-dark": "#E5E7EB",
-                        positive: "#10B981",
-                        negative: "#EF4444",
-                        neutral: "#F59E0B"
+                        primary: "#8B5CF6", // Violet
+                        secondary: "#A78BFA", // Light Violet
+                        accent: "#FBBF24", // Amber
+                        danger: "#EF4444", // Red
+                        success: "#10B981", // Green
+                        surface: "#FFFFFF",
+                        "surface-dark": "#1F2937",
+                        "bg-light": "#F3F4F6",
+                        "bg-dark": "#111827",
+                        black: "#111827",
                     },
-                    fontFamily: { display: ["Inter", "ui-sans-serif", "system-ui"] },
-                    borderRadius: { DEFAULT: "0.75rem", lg: "1.25rem", xl: "1.75rem", full: "9999px" },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                        mono: ["Space Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        DEFAULT: "0px",
+                        sm: "0px",
+                        md: "0px",
+                        lg: "0px",
+                        xl: "0px",
+                        full: "9999px"
+                    },
                     boxShadow: {
-                        soft: "9px 9px 16px #d1d9e6, -9px -9px 16px #ffffff",
-                        softDark: "9px 9px 16px #0c141c, -9px -9px 16px #141e28",
-                        card: "0 10px 20px rgba(0,0,0,.06)",
-                        btn: "0 8px 16px rgba(79,70,229,.25)"
+                        neo: "5px 5px 0px 0px #000000",
+                        "neo-sm": "3px 3px 0px 0px #000000",
+                        "neo-lg": "8px 8px 0px 0px #000000",
+                        none: "0px 0px 0px 0px #000000",
+                    },
+                    borderWidth: {
+                        DEFAULT: "2px",
+                        '3': '3px',
+                        '4': '4px',
+                    },
+                    opacity: {
+                        90: '0.9',
+                        80: '0.8',
                     }
                 }
             }
         }
     </script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
         :root {
-            --ring: rgba(79,70,229,.7);
+            --shadow-color: #000;
         }
-        .scroll-smooth { scroll-behavior: smooth; }
-        .focus-ring:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-        .no-underline { text-decoration: none; }
+
+        body {
+            background-color: #f0f0f0;
+            background-image: radial-gradient(#ddd 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+
+
         .container-max { max-width: 1200px; margin-inline: auto; }
-        .surface { background-color: rgba(255,255,255,.7); backdrop-filter: blur(8px); }
-        .surface-dark { background-color: rgba(17,24,39,.6); backdrop-filter: blur(8px); }
-        .transition-base { transition: all .2s ease; }
-        .hover-elevate:hover { box-shadow: 0 12px 24px rgba(0,0,0,.08); transform: translateY(-1px); }
-        .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.625rem 1rem; border-radius:.75rem; font-weight:600; }
-        .btn-primary { background-color:#4F46E5; color:white; }
-        .btn-primary:hover { background-color:#4338CA; }
-        .btn-outline { border:1px solid rgba(79,70,229,.35); color:#4F46E5; }
-        .btn-outline:hover { background-color:rgba(79,70,229,.08); }
-        .card { border-radius:1rem; padding:1.25rem; box-shadow: 0 10px 20px rgba(0,0,0,.06); }
-        .badge { border-radius:.5rem; padding:.25rem .5rem; font-weight:600; font-size:.75rem; }
-        .text-muted { opacity:.7; }
+
+        /* Neo Brutalism Base Classes */
+        .surface {
+            background-color: #ffffff;
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px 0px #000;
+        }
+
+
+
+        .card {
+            background-color: white;
+            border: 3px solid #000;
+            padding: 1.5rem;
+            box-shadow: 6px 6px 0px 0px #000;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px 0px #000;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0px 0px #000;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #000;
+        }
+
+        .btn-primary {
+            background-color: #8B5CF6;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #7C3AED;
+        }
+
+        .btn-outline {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .btn-outline:hover {
+            background-color: #F3F4F6;
+        }
+
+        .badge {
+            border: 2px solid #000;
+            padding: 0.25rem 0.5rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px 0px #000;
+            background: #FBBF24;
+            color: #000;
+        }
+
+        .text-muted { opacity: 0.7; }
+
+        .no-underline { text-decoration: none; }
+
+        /* Input Fields */
+        input[type="text"], input[type="file"], textarea, select {
+            border: 3px solid #000 !important;
+            padding: 0.75rem !important;
+            box-shadow: 4px 4px 0px 0px #000 !important;
+            outline: none !important;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            transform: translate(-1px, -1px);
+            box-shadow: 6px 6px 0px 0px #000 !important;
+        }
+
+        /* Material Symbols overrides for boldness */
+        .material-symbols-outlined {
+            font-weight: 700 !important;
+            font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+        }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark scroll-smooth">
+<body class="bg-background-light font-display text-text-light scroll-smooth">
     <div class="min-h-screen flex">

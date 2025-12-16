@@ -18,7 +18,7 @@ $error = '';
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     try {
         $id = (int) $_GET['id'];
-        
+
         if (!$conn) {
             throw new Exception('Koneksi database gagal');
         }
@@ -90,19 +90,14 @@ include '../includes/header.php';
                     </nav>
                     <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Training Model</h1>
                 </div>
-                <button id="themeToggle" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition 
-                           bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                           shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                           dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]" aria-label="Toggle theme">
-                    <span class="material-symbols-outlined align-middle text-base sm:text-lg">dark_mode</span>
-                </button>
+
             </div>
         </header>
 
         <!-- Alert Messages -->
         <?php if ($message): ?>
-        <div class="p-4 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 shadow-lg mb-6">
-            <div class="flex items-center gap-2">
+        <div class="card bg-green-100 border-green-500 mb-6">
+            <div class="flex items-center gap-2 text-green-800 font-bold">
                 <span class="material-symbols-outlined">check_circle</span>
                 <span><?php echo htmlspecialchars($message); ?></span>
             </div>
@@ -110,8 +105,8 @@ include '../includes/header.php';
         <?php endif; ?>
 
         <?php if ($error): ?>
-        <div class="p-4 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 shadow-lg mb-6">
-            <div class="flex items-center gap-2">
+        <div class="card bg-red-100 border-red-500 mb-6">
+            <div class="flex items-center gap-2 text-red-800 font-bold">
                 <span class="material-symbols-outlined">error</span>
                 <span><?php echo htmlspecialchars($error); ?></span>
             </div>
@@ -121,23 +116,17 @@ include '../includes/header.php';
         <!-- Upload Section -->
         <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 mb-8">
             <!-- Upload Form -->
-            <article class="xl:col-span-2 p-6 rounded-xl 
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="xl:col-span-2 card">
                 <h2 class="text-xl font-bold mb-4">
                     <span class="material-symbols-outlined align-middle mr-2">upload_file</span>
                     Upload Dataset CSV
                 </h2>
-                
+
                 <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium mb-2">Nama Dataset</label>
                         <input type="text" name="dataset_name" id="datasetName" required
-                               class="w-full p-3 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
-                                      shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                      dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
-                                      border-0 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                               class="w-full"
                                placeholder="Contoh: Dataset Review Produk">
                     </div>
 
@@ -145,18 +134,12 @@ include '../includes/header.php';
                         <label class="block text-sm font-medium mb-2">File CSV</label>
                         <div class="relative">
                             <input type="file" name="csv_file" id="csvFile" accept=".csv" required
-                                   class="w-full p-3 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
-                                          shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                          dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
-                                          border-0 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                   class="w-full">
                         </div>
                         <p class="text-xs opacity-70 mt-2">Format: CSV dengan kolom 'Create time' dan 'Teks' (labeling otomatis)</p>
                     </div>
 
-                    <button type="submit" class="w-full px-4 py-3 rounded-xl font-bold transition
-                                   bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                                   shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                                   dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28] focus-ring">
+                    <button type="submit" class="w-full btn btn-primary justify-center text-lg">
                         <span class="material-symbols-outlined align-middle mr-2">cloud_upload</span>
                         Upload & Train Model
                     </button>
@@ -164,12 +147,12 @@ include '../includes/header.php';
 
                 <!-- Progress -->
                 <div id="progressSection" class="mt-6 hidden">
-                    <div class="p-4 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
-                        <div class="flex items-center gap-2 mb-2">
+                    <div class="card bg-blue-50 border-blue-500">
+                        <div class="flex items-center gap-2 mb-2 font-bold text-blue-900">
                             <span class="material-symbols-outlined animate-spin">progress_activity</span>
                             <span id="progressText">Uploading...</span>
                         </div>
-                        <div class="w-full h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div class="w-full h-4 bg-white border-2 border-black rounded-none overflow-hidden">
                             <div id="progressBar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
                         </div>
                     </div>
@@ -177,10 +160,7 @@ include '../includes/header.php';
             </article>
 
             <!-- Info -->
-            <article class="p-6 rounded-xl 
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="card">
                 <h2 class="text-xl font-bold mb-4">
                     <span class="material-symbols-outlined align-middle mr-2">info</span>
                     Panduan
@@ -196,7 +176,7 @@ include '../includes/header.php';
                     </div>
                     <div>
                         <h3 class="font-bold mb-1">Contoh Data:</h3>
-                        <code class="block p-2 bg-white/60 dark:bg-white/5 rounded text-xs overflow-x-auto">
+                        <code class="block p-2 border-2 border-black bg-gray-50 rounded text-xs overflow-x-auto">
                             Create time,Teks<br>
                             "2024-01-01","Produk bagus"<br>
                             "2024-01-02","Sangat buruk"
@@ -215,10 +195,7 @@ include '../includes/header.php';
         </section>
 
         <!-- Datasets List -->
-        <section class="p-6 rounded-xl 
-                        bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                        shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                        dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+        <section class="card">
             <h2 class="text-xl font-bold mb-4">
                 <span class="material-symbols-outlined align-middle mr-2">dataset</span>
                 Dataset Tersimpan
@@ -233,7 +210,7 @@ include '../includes/header.php';
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-black/10 dark:border-white/10">
+                        <tr class="border-b-2 border-black">
                             <th class="text-left p-3 font-bold">Nama Dataset</th>
                             <th class="text-left p-3 font-bold">File</th>
                             <th class="text-left p-3 font-bold">Tanggal Upload</th>
@@ -242,20 +219,20 @@ include '../includes/header.php';
                     </thead>
                     <tbody>
                         <?php foreach ($datasets as $dataset): ?>
-                        <tr class="border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5">
+                        <tr class="border-b border-black hover:bg-yellow-50">
                             <td class="p-3 font-medium"><?php echo htmlspecialchars($dataset['original_filename']); ?></td>
                             <td class="p-3 text-sm opacity-70"><?php echo htmlspecialchars($dataset['filename']); ?></td>
                             <td class="p-3 text-sm opacity-70"><?php echo date('d M Y', strtotime($dataset['created_at'])); ?></td>
                             <td class="p-3 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    <a href="dataset.php?id=<?php echo $dataset['id']; ?>" 
-                                       class="px-3 py-1 rounded-lg text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-900/50 no-underline">
+                                    <a href="dataset.php?id=<?php echo $dataset['id']; ?>"
+                                       class="btn btn-outline text-sm py-1 px-3 bg-blue-100 hover:bg-blue-200 border-black text-black">
                                         <span class="material-symbols-outlined align-middle text-sm">visibility</span>
                                         Detail
                                     </a>
-                                    <a href="?action=delete&id=<?php echo $dataset['id']; ?>" 
+                                    <a href="?action=delete&id=<?php echo $dataset['id']; ?>"
                                        onclick="return confirm('Yakin ingin menghapus dataset ini?')"
-                                       class="px-3 py-1 rounded-lg text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-900/50 no-underline">
+                                       class="btn btn-outline text-sm py-1 px-3 bg-red-100 hover:bg-red-200 border-black text-black">
                                         <span class="material-symbols-outlined align-middle text-sm">delete</span>
                                         Hapus
                                     </a>
@@ -274,31 +251,31 @@ include '../includes/header.php';
 <script>
 document.getElementById('uploadForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const progressSection = document.getElementById('progressSection');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
-    
+
     progressSection.classList.remove('hidden');
     progressText.textContent = 'Uploading dataset...';
     progressBar.style.width = '30%';
-    
+
     try {
         const response = await fetch('upload_dataset.php', {
             method: 'POST',
             body: formData
         });
-        
+
         progressBar.style.width = '60%';
         progressText.textContent = 'Training model...';
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             progressBar.style.width = '100%';
             progressText.textContent = 'Training completed!';
-            
+
             setTimeout(() => {
                 window.location.href = 'train.php?message=' + encodeURIComponent('Dataset berhasil diupload dan model berhasil ditraining!');
             }, 1000);
@@ -307,8 +284,8 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
         }
     } catch (error) {
         progressSection.innerHTML = `
-            <div class="p-4 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200">
-                <div class="flex items-center gap-2">
+            <div class="card bg-red-100 border-red-500">
+                <div class="flex items-center gap-2 text-red-800 font-bold">
                     <span class="material-symbols-outlined">error</span>
                     <span>Error: ${error.message}</span>
                 </div>

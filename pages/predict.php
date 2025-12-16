@@ -23,12 +23,7 @@ include '../includes/header.php';
                     </nav>
                     <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Analisis Sentimen Teks</h1>
                 </div>
-                <button id="themeToggle" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition
-                           bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                           shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                           dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]" aria-label="Toggle theme">
-                    <span class="material-symbols-outlined align-middle text-base sm:text-lg">dark_mode</span>
-                </button>
+
             </div>
         </header>
 
@@ -38,33 +33,21 @@ include '../includes/header.php';
         <!-- Grid -->
         <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
             <!-- Input Section -->
-            <article class="xl:col-span-2 p-6 rounded-xl
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="xl:col-span-2 card">
                 <h2 class="text-xl font-bold mb-4">
                     <span class="material-symbols-outlined align-middle mr-2">edit_note</span>
                     Input Teks
                 </h2>
                 <textarea id="textInput" rows="8"
-                    class="w-full p-4 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
-                                 shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                 dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
-                                 border-0 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    class="w-full p-4 border-4 border-black shadow-[inset_4px_4px_0_0_rgba(0,0,0,0.1)] focus:outline-none focus:ring-0 text-lg font-mono placeholder:text-gray-500"
                     placeholder="Masukkan teks dalam bahasa Indonesia di sini..."></textarea>
 
                 <div class="flex gap-3 mt-4">
-                    <button onclick="analyzeText()" class="flex-1 px-4 py-3 rounded-xl font-bold transition
-                                   bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                                   shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                                   dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28] focus-ring">
+                    <button onclick="analyzeText()" class="flex-1 btn btn-primary justify-center text-lg">
                         <span class="material-symbols-outlined align-middle mr-2">search</span>
                         Analisis Sentimen
                     </button>
-                    <button onclick="clearText()" class="px-4 py-3 rounded-xl font-bold transition
-                                   bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                                   shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                                   dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28] focus-ring">
+                    <button onclick="clearText()" class="btn btn-outline bg-red-100 border-red-500 text-red-600 hover:bg-red-200">
                         <span class="material-symbols-outlined align-middle">close</span>
                     </button>
                 </div>
@@ -72,18 +55,12 @@ include '../includes/header.php';
                 <!-- Preprocessed Text -->
                 <div id="preprocessedSection" class="mt-4 hidden">
                     <h3 class="text-sm font-bold mb-2 opacity-70">Teks Setelah Preprocessing:</h3>
-                    <div id="preprocessedText" class="p-4 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur
-                                                       shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                                       dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]
-                                                       text-sm font-mono"></div>
+                    <div id="preprocessedText" class="p-4 border-2 border-black bg-gray-50 text-sm font-bold font-mono"></div>
                 </div>
             </article>
 
             <!-- Quick Info -->
-            <article class="p-6 rounded-xl
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="card">
                 <h2 class="text-xl font-bold mb-4">
                     <span class="material-symbols-outlined align-middle mr-2">info</span>
                     Tentang
@@ -110,48 +87,36 @@ include '../includes/header.php';
         <section id="resultsSection" class="mt-8 hidden">
             <!-- Sentiment Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <article class="p-6 rounded-xl text-center
-                                bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                                shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                                dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <article class="card text-center bg-green-50">
                     <span class="material-symbols-outlined text-5xl text-green-600 mb-3 inline-block">sentiment_satisfied</span>
                     <h3 class="text-lg font-bold mb-2">Positive</h3>
                     <p class="text-3xl font-extrabold" id="positiveScore">0%</p>
-                    <div class="mt-3 h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div class="mt-3 h-4 bg-white border-2 border-black rounded-none overflow-hidden">
                         <div id="positiveBar" class="h-full bg-green-500 transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </article>
 
-                <article class="p-6 rounded-xl text-center
-                                bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                                shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                                dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <article class="card text-center bg-yellow-50">
                     <span class="material-symbols-outlined text-5xl text-yellow-600 mb-3 inline-block">sentiment_neutral</span>
                     <h3 class="text-lg font-bold mb-2">Neutral</h3>
                     <p class="text-3xl font-extrabold" id="neutralScore">0%</p>
-                    <div class="mt-3 h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div class="mt-3 h-4 bg-white border-2 border-black rounded-none overflow-hidden">
                         <div id="neutralBar" class="h-full bg-yellow-500 transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </article>
 
-                <article class="p-6 rounded-xl text-center
-                                bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                                shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                                dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+                <article class="card text-center bg-red-50">
                     <span class="material-symbols-outlined text-5xl text-red-600 mb-3 inline-block">sentiment_dissatisfied</span>
                     <h3 class="text-lg font-bold mb-2">Negative</h3>
                     <p class="text-3xl font-extrabold" id="negativeScore">0%</p>
-                    <div class="mt-3 h-2 bg-white/60 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div class="mt-3 h-4 bg-white border-2 border-black rounded-none overflow-hidden">
                         <div id="negativeBar" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </article>
             </div>
 
             <!-- Final Result -->
-            <article class="p-8 rounded-xl text-center
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="card text-center border-4">
                 <span id="resultIcon" class="material-symbols-outlined text-7xl mb-4 inline-block">sentiment_satisfied</span>
                 <h2 class="text-2xl font-bold mb-2">Hasil Analisis</h2>
                 <p class="text-5xl font-extrabold mb-4" id="resultSentiment">Positive</p>
@@ -160,10 +125,7 @@ include '../includes/header.php';
             </article>
 
             <!-- Word Importance -->
-            <article id="wordImportanceSection" class="mt-8 p-6 rounded-xl hidden
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article id="wordImportanceSection" class="mt-8 card hidden">
                 <h2 class="text-xl font-bold mb-4">
                     <span class="material-symbols-outlined align-middle mr-2">label</span>
                     Kata-kata Berpengaruh
@@ -178,13 +140,13 @@ include '../includes/header.php';
     function showAlert(message, type = 'info') {
         const container = document.getElementById('alertContainer');
         const colors = {
-            success: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-            error: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
-            info: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
+            success: 'bg-green-100 text-green-800',
+            error: 'bg-red-100 text-red-800',
+            info: 'bg-blue-100 text-blue-800'
         };
 
         const alert = document.createElement('div');
-        alert.className = `p-4 rounded-xl ${colors[type]} shadow-lg mb-4`;
+        alert.className = `p-4 border-2 border-black bg-white shadow-neo mb-4`;
         alert.innerHTML = `
         <div class="flex items-center gap-2">
             <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span>
@@ -287,11 +249,11 @@ include '../includes/header.php';
                 .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
                 .slice(0, 15)
                 .forEach(([word, score]) => {
-                    const color = score > 0 ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' :
-                        score < 0 ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' :
-                        'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
+                    const color = score > 0 ? 'bg-green-100 text-green-800' :
+                        score < 0 ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800';
                     const tag = document.createElement('span');
-                    tag.className = `px-3 py-1 rounded-lg text-sm font-medium ${color}`;
+                    tag.className = `px-3 py-1 border-2 border-black text-sm font-bold shadow-[2px_2px_0_0_#000] ${color}`;
                     tag.textContent = `${word} (${score.toFixed(3)})`;
                     list.appendChild(tag);
                 });

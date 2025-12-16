@@ -25,17 +25,17 @@ if ($conn) {
     $stmt->bind_param("i", $dataset_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
         $dataset = $result->fetch_assoc();
-        
+
         // Read CSV and calculate stats with auto-labeling
         $filepath = __DIR__ . '/data/uploads/' . $dataset['filename'];
         if (file_exists($filepath)) {
             // Load lexicon
             $lexicon_path = __DIR__ . '/../data/lexicon/lexicon.txt';
             $lexicon_scores = [];
-            
+
             if (file_exists($lexicon_path)) {
                 $lexicon = file($lexicon_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                 foreach ($lexicon as $line) {
@@ -45,10 +45,10 @@ if ($conn) {
                     }
                 }
             }
-            
+
             $handle = fopen($filepath, 'r');
             $header = fgetcsv($handle);
-            
+
             // Find text column (case insensitive)
             $textIndex = -1;
             foreach ($header as $index => $col) {
@@ -57,31 +57,31 @@ if ($conn) {
                     break;
                 }
             }
-            
+
             if ($textIndex !== -1) {
                 require_once '../lib/Preprocessing.php';
                 $preprocessor = new Preprocessing();
-                
+
                 while (($row = fgetcsv($handle)) !== false) {
                     if (!isset($row[$textIndex]) || empty(trim($row[$textIndex]))) {
                         continue;
                     }
-                    
+
                     $text = $row[$textIndex];
-                    
+
                     // Preprocessing
                     $text = $preprocessor->convertEmoji($text);
                     $text = $preprocessor->convertEmoticons($text);
                     $cleaned_text = $preprocessor->cleanText($text);
-                    
+
                     if (empty(trim($cleaned_text))) {
                         continue;
                     }
-                    
+
                     $tokens = $preprocessor->tokenize($cleaned_text);
                     $tokens = $preprocessor->removeStopwords($tokens);
                     $stemmed_tokens = $preprocessor->stemWords($tokens);
-                    
+
                     // Calculate sentiment score
                     $total_score = 0;
                     foreach ($stemmed_tokens as $token) {
@@ -89,7 +89,7 @@ if ($conn) {
                             $total_score += $lexicon_scores[$token];
                         }
                     }
-                    
+
                     // Determine sentiment
                     $sentiment = 'neutral';
                     if ($total_score > 0) {
@@ -97,7 +97,7 @@ if ($conn) {
                     } elseif ($total_score < 0) {
                         $sentiment = 'negative';
                     }
-                    
+
                     $stats['total']++;
                     if (isset($stats[$sentiment])) {
                         $stats[$sentiment]++;
@@ -139,19 +139,10 @@ include '../includes/header.php';
                     <h1 class="text-2xl sm:text-4xl font-black tracking-tight"><?php echo htmlspecialchars($dataset['original_filename']); ?></h1>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <a href="download_dataset.php?id=<?php echo $dataset_id; ?>" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition 
-                             bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                             shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                             dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28] no-underline">
+                    <a href="download_dataset.php?id=<?php echo $dataset_id; ?>" class="btn btn-primary">
                         <span class="material-symbols-outlined align-middle text-base sm:text-lg mr-1">download</span>
                         Export
                     </a>
-                    <button id="themeToggle" class="px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base focus-ring transition 
-                               bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/[.15]
-                               shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                               dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]" aria-label="Toggle theme">
-                        <span class="material-symbols-outlined align-middle text-base sm:text-lg">dark_mode</span>
-                    </button>
                 </div>
             </div>
         </header>
@@ -159,10 +150,7 @@ include '../includes/header.php';
         <!-- Grid -->
         <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 auto-rows-fr">
             <!-- Dataset Info -->
-            <article class="p-6 rounded-xl 
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="card">
                 <h2 class="text-xl font-bold mb-4">Dataset Info</h2>
                 <dl class="space-y-3">
                     <div class="flex items-center justify-between">
@@ -185,10 +173,7 @@ include '../includes/header.php';
             </article>
 
             <!-- Sentiment Distribution -->
-            <article class="p-6 rounded-xl xl:col-span-2 
-                            bg-white/70 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/50
-                            shadow-[9px_9px_16px_#d1d9e6,-9px_-9px_16px_#ffffff]
-                            dark:shadow-[9px_9px_16px_#0c141c,-9px_-9px_16px_#141e28]">
+            <article class="card xl:col-span-2">
                 <div class="flex items-start justify-between gap-4 mb-4">
                     <h2 class="text-xl font-bold">Distribusi Sentimen</h2>
                     <div class="flex items-center gap-2 text-sm opacity-80">
@@ -202,7 +187,7 @@ include '../includes/header.php';
                     $posPercent = $stats['total'] > 0 ? round(($stats['positive'] / $stats['total']) * 100, 1) : 0;
                     $negPercent = $stats['total'] > 0 ? round(($stats['negative'] / $stats['total']) * 100, 1) : 0;
                     $neuPercent = $stats['total'] > 0 ? round(($stats['neutral'] / $stats['total']) * 100, 1) : 0;
-                    
+
                     $posDash = round($posPercent * 100 / 100, 1);
                     $negDash = round($negPercent * 100 / 100, 1);
                     $neuDash = round($neuPercent * 100 / 100, 1);
@@ -224,23 +209,17 @@ include '../includes/header.php';
                         </div>
                     </div>
                     <ul class="grid grid-cols-3 gap-2 md:gap-4 text-center">
-                        <li class="p-3 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur 
-                                   shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                   dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]">
+                        <li class="p-3 card shadow-none bg-green-50 border-2 border-black">
                             <p class="text-xs opacity-70">Positive</p>
                             <p class="text-2xl font-bold"><?php echo $posPercent; ?>%</p>
                             <p class="text-xs opacity-50"><?php echo number_format($stats['positive']); ?> data</p>
                         </li>
-                        <li class="p-3 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur 
-                                   shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                   dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]">
+                        <li class="p-3 card shadow-none bg-red-50 border-2 border-black">
                             <p class="text-xs opacity-70">Negative</p>
                             <p class="text-2xl font-bold"><?php echo $negPercent; ?>%</p>
                             <p class="text-xs opacity-50"><?php echo number_format($stats['negative']); ?> data</p>
                         </li>
-                        <li class="p-3 rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur 
-                                   shadow-[inset_9px_9px_16px_#d1d9e6,inset_-9px_-9px_16px_#ffffff]
-                                   dark:shadow-[inset_9px_9px_16px_#0c141c,inset_-9px_-9px_16px_#141e28]">
+                        <li class="p-3 card shadow-none bg-yellow-50 border-2 border-black">
                             <p class="text-xs opacity-70">Neutral</p>
                             <p class="text-2xl font-bold"><?php echo $neuPercent; ?>%</p>
                             <p class="text-xs opacity-50"><?php echo number_format($stats['neutral']); ?> data</p>
