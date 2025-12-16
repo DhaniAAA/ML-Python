@@ -354,6 +354,10 @@ class SentimentModel
                     $prediction['sample_words'] = $this->getSampleWords(5);
                 }
             }
+        } else {
+            // Fallback ke lexicon jika tidak ada kata yang cocok dengan vocabulary
+            $prediction = $this->predictWithLexicon($tokens);
+            $prediction['method'] = 'lexicon (no_vocab_match)';
         }
 
         // Hitung frekuensi kata untuk word cloud

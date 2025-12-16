@@ -18,6 +18,8 @@ $stats = [
     'negative' => 0,
     'neutral' => 0
 ];
+$word_counts = [];
+$word_cloud_data = [];
 
 // Get dataset info
 if ($conn) {
@@ -98,6 +100,16 @@ if ($conn) {
                         $sentiment = 'negative';
                     }
 
+                    // Count words for WordCloud
+                    foreach ($stemmed_tokens as $token) {
+                        if (strlen($token) > 2) { // Filter very short words
+                            if (!isset($word_counts[$token])) {
+                                $word_counts[$token] = 0;
+                            }
+                            $word_counts[$token]++;
+                        }
+                    }
+
                     $stats['total']++;
                     if (isset($stats[$sentiment])) {
                         $stats[$sentiment]++;
@@ -105,6 +117,14 @@ if ($conn) {
                 }
             }
             fclose($handle);
+
+            // Process word counts for visualization
+            arsort($word_counts);
+            $top_words = array_slice($word_counts, 0, 100);
+            $word_cloud_data = [];
+            foreach ($top_words as $word => $count) {
+                $word_cloud_data[] = [$word, $count];
+            }
         }
     }
     $stmt->close();
@@ -115,6 +135,8 @@ if (!$dataset) {
     exit;
 }
 
+// Add WordCloud script to header
+$extra_head = '<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>';
 include '../includes/header.php';
 ?>
 
@@ -228,7 +250,64 @@ include '../includes/header.php';
                 </div>
             </article>
         </section>
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-6">
+            <!-- Word Cloud -->
+            <article class="card lg:col-span-2">
+                <h2 class="text-xl font-bold mb-4">
+                    <span class="material-symbols-outlined align-middle mr-2">cloud</span>
+                    Word Cloud Dataset
+                </h2>
+                <div class="w-full h-[400px] border-2 border-black bg-gray-50 flex items-center justify-center relative" id="wordCloudContainer">
+                    <canvas id="wordCloudCanvas" class="w-full h-full"></canvas>
+                </div>
+                <p class="text-sm opacity-70 mt-2 text-center">Kata-kata yang paling sering muncul dalam dataset (setelah preprocessing)</p>
+            </article>
+        </section>
     </div>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ambil data, lalu potong (slice) hanya 0 sampai 50 kata pertama
+        const rawList = <?php echo json_encode($word_cloud_data); ?>;
+        const wordList = rawList.slice(0, 100);
+
+        if (wordList.length > 0) {
+            const canvas = document.getElementById('wordCloudCanvas');
+            const container = document.getElementById('wordCloudContainer');
+
+            // Resize canvas to match container
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+
+            WordCloud(canvas, {
+                list: wordList,
+                gridSize: 8,
+                weightFactor: function (size) {
+                    return Math.max(16, (size / wordList[0][1]) * 60); // Scale based on max freq
+                },
+                fontFamily: 'Space Mono, monospace',
+                color: function (word, weight) {
+                    const colors = ['#8B5CF6', '#10B981', '#EF4444', '#F59E0B', '#111827'];
+                    return colors[Math.floor(Math.random() * colors.length)];
+                },
+                rotateRatio: 0,
+                rotationSteps: 0,
+                backgroundColor: 'transparent',
+                drawOutOfBound: false,
+                shrinkToFit: true
+            });
+
+            // Handle resize
+            window.addEventListener('resize', function() {
+                canvas.width = container.offsetWidth;
+                canvas.height = container.offsetHeight;
+                // Re-render handled by library or page reload usually, simple debounce in real app
+            });
+        }
+    });
+
+    // Theme toggle logic removal - Cleanup if any traces left
+</script>
 
 <?php include '../includes/footer.php'; ?>

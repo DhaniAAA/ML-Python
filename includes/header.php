@@ -165,6 +165,7 @@
             font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 24;
         }
     </style>
+    <?php if (isset($extra_head)) echo $extra_head; ?>
 </head>
 <body class="bg-background-light font-display text-text-light scroll-smooth">
     <div class="min-h-screen flex">

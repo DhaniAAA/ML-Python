@@ -1,4 +1,9 @@
 <?php
+// Prevent HTML errors from breaking JSON
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ob_start();
+
 require_once '../includes/memory_helper.php';
 require_once '../vendor/autoload.php';
 require_once '../includes/config.php';
@@ -54,7 +59,7 @@ try {
     }
 
     $header = fgetcsv($handle);
-    
+
     // Cari index kolom Teks (case insensitive)
     $textIndex = -1;
     foreach ($header as $index => $col) {
@@ -63,7 +68,7 @@ try {
             break;
         }
     }
-    
+
     if ($textIndex === -1) {
         fclose($handle);
         unlink($filepath);
@@ -77,10 +82,10 @@ try {
         unlink($filepath);
         throw new Exception('File lexicon tidak ditemukan');
     }
-    
+
     $lexicon = file($lexicon_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $lexicon_scores = [];
-    
+
     foreach ($lexicon as $line) {
         $parts = explode(",", $line);
         if (count($parts) === 2) {
@@ -187,19 +192,19 @@ try {
     // Save model info to database (2 records: vectorizer dan naive_bayes)
     $vectorizer_filename = 'vectorizer.json';
     $nb_filename = 'naive_bayes.dat';
-    
+
     $stmt = $conn->prepare("INSERT INTO models (dataset_id, filename, model_type, created_at) VALUES (?, ?, ?, NOW())");
-    
+
     // Insert vectorizer model
     $model_type = 'vectorizer';
     $stmt->bind_param("iss", $dataset_id, $vectorizer_filename, $model_type);
     $stmt->execute();
-    
+
     // Insert naive bayes model
     $model_type = 'naive_bayes';
     $stmt->bind_param("iss", $dataset_id, $nb_filename, $model_type);
     $stmt->execute();
-    
+
     $stmt->close();
 
     echo json_encode([

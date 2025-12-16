@@ -54,9 +54,6 @@ include '../includes/header.php';
                         <span class="material-symbols-outlined align-middle text-base sm:text-lg mr-1">search</span>
                         Analisis Baru
                     </a>
-                    <button id="themeToggle" class="btn btn-outline" aria-label="Toggle theme">
-                        <span class="material-symbols-outlined align-middle text-base sm:text-lg">dark_mode</span>
-                    </button>
                 </div>
             </div>
         </header>
