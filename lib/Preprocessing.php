@@ -104,8 +104,14 @@ class Preprocessing
         // Lowercase
         $text = strtolower($text);
 
-        // Hapus URL
-        $text = preg_replace('/https?:\/\/\S+/', '', $text);
+        // Hapus URL (termasuk short URLs seperti t.co, bit.ly, dll)
+        $text = preg_replace('/https?:\/\/[^\s]+/i', '', $text);
+        $text = preg_replace('/http?:\/\/[^\s]+/i', '', $text);
+        $text = preg_replace('/www\.[^\s]+/i', '', $text);
+        // Hapus pola t.co dan short URL lainnya yang mungkin tidak ada http
+        $text = preg_replace('/\b[a-z]+\.[a-z]{2,3}\/[a-zA-Z0-9]+\b/i', '', $text);
+        // Hapus URL sisa yang mungkin hanya domain
+        $text = preg_replace('/\b(t\.co|bit\.ly|goo\.gl|tinyurl\.com|ow\.ly|is\.gd|buff\.ly)\/[^\s]+/i', '', $text);
 
         // Hapus HTML tags
         $text = strip_tags($text);

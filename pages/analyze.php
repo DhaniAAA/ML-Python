@@ -16,11 +16,11 @@ function debug_log($message, $data = null) {
     $log_file = __DIR__ . '/../debug_analyze.log';
     $timestamp = date('Y-m-d H:i:s');
     $log_message = "[$timestamp] $message";
-    
+
     if ($data !== null) {
         $log_message .= "\nData: " . print_r($data, true);
     }
-    
+
     file_put_contents($log_file, $log_message . "\n\n", FILE_APPEND);
 }
 
@@ -33,27 +33,27 @@ try {
         throw new Exception('File memory_helper.php tidak ditemukan!');
     }
     debug_log("File memory_helper.php ada");
-    
+
     // Tambahkan memory helper untuk meningkatkan batas memori
     require_once '../includes/memory_helper.php';
     debug_log("memory_helper.php berhasil diinclude");
-    
+
     // Cek file-file yang diperlukan
     if (!file_exists('../vendor/autoload.php')) {
         throw new Exception('File vendor/autoload.php tidak ditemukan!');
     }
     debug_log("File vendor/autoload.php ada");
-    
+
     if (!file_exists('../includes/config.php')) {
         throw new Exception('File config.php tidak ditemukan!');
     }
     debug_log("File config.php ada");
-    
+
     if (!file_exists('../models/SentimentModel.php')) {
         throw new Exception('File models/SentimentModel.php tidak ditemukan!');
     }
     debug_log("File models/SentimentModel.php ada");
-    
+
     // Include file-file yang diperlukan
     require_once '../vendor/autoload.php';
     require_once '../includes/config.php';
@@ -81,29 +81,29 @@ try {
     // Ambil teks dari POST
     $text = $_POST['text'] ?? '';
     debug_log("Teks input: " . substr($text, 0, 100) . (strlen($text) > 100 ? '...' : ''));
-    
+
     if (empty($text)) {
         throw new Exception('Teks tidak boleh kosong');
     }
-    
+
     // Inisialisasi model sentimen
     debug_log("Inisialisasi SentimentModel");
     $model = new SentimentModel();
-    
+
     // Analisis sentimen
     debug_log("Menganalisis sentimen");
     $result = $model->analyze($text);
-    
+
     // Cek jika ada error
     if (isset($result['error']) && $result['error']) {
         throw new Exception($result['message']);
     }
-    
+
     debug_log("Hasil analisis: " . $result['sentiment'] . " (metode: " . $result['method'] . ")");
-    
+
     // Bersihkan output buffer sebelum mengirim respons
     if (ob_get_length()) ob_clean();
-    
+
     // Debug JSON sebelum mengirim
     $json = json_encode($result, JSON_UNESCAPED_UNICODE);
     if (json_last_error() !== JSON_ERROR_NONE) {
@@ -113,18 +113,18 @@ try {
         exit;
     }
     debug_log("JSON valid, ukuran: " . strlen($json) . " bytes");
-    
+
     // Kirim respons JSON
     echo $json;
     debug_log("Berhasil mengirim respons JSON");
-    
+
 } catch (Exception $e) {
     // Log error untuk debugging
     debug_log("ERROR: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-    
+
     // Bersihkan output buffer sebelum mengirim respons
     if (ob_get_length()) ob_clean();
-    
+
     // Kirim kode status HTTP error dan pesan error dalam format JSON
     http_response_code(400);
     echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
@@ -132,10 +132,10 @@ try {
 } catch (Error $e) {
     // Tangkap semua jenis error PHP
     debug_log("PHP ERROR: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-    
+
     // Bersihkan output buffer
     if (ob_get_length()) ob_clean();
-    
+
     // Kirim respons error
     http_response_code(500);
     echo json_encode(['error' => 'Terjadi kesalahan internal: ' . $e->getMessage()], JSON_UNESCAPED_UNICODE);

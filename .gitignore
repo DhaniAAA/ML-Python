@@ -28,7 +28,8 @@ models/*.pkl
 models/*.dat
 .pages/models/*.dat
 .pages/models/*.pkl
-
+*.pkl
+*.dat
 *.png
 data/uploads/*
 !data/uploads/.gitkeep
@@ -55,7 +56,7 @@ debug_*.log
 vendor/
 composer.phar
 composer.lock
-
+*.dat
 .DS_Store
 Thumbs.db
 .cache/

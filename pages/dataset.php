@@ -18,6 +18,14 @@ $stats = [
     'negative' => 0,
     'neutral' => 0
 ];
+require_once '../models/SentimentModel.php';
+$model = new SentimentModel();
+$confusion_matrix = [
+    'positive' => ['positive' => 0, 'neutral' => 0, 'negative' => 0],
+    'neutral' => ['positive' => 0, 'neutral' => 0, 'negative' => 0],
+    'negative' => ['positive' => 0, 'neutral' => 0, 'negative' => 0],
+];
+$dataset_data = [];
 $word_counts = [];
 $word_cloud_data = [];
 
@@ -60,6 +68,13 @@ if ($conn) {
                 }
             }
 
+            // Prepare Temp CSV for Python Training
+            $temp_dir = __DIR__ . '/data/temp/';
+            if (!is_dir($temp_dir)) mkdir($temp_dir, 0777, true);
+            $temp_csv = $temp_dir . 'processed_' . $dataset_id . '.csv';
+            $temp_handle = fopen($temp_csv, 'w');
+            fputcsv($temp_handle, ['text', 'sentiment']);
+
             if ($textIndex !== -1) {
                 require_once '../lib/Preprocessing.php';
                 $preprocessor = new Preprocessing();
@@ -92,13 +107,37 @@ if ($conn) {
                         }
                     }
 
-                    // Determine sentiment
+                    // Determine sentiment (Lexicon / Actual)
                     $sentiment = 'neutral';
                     if ($total_score > 0) {
                         $sentiment = 'positive';
                     } elseif ($total_score < 0) {
                         $sentiment = 'negative';
                     }
+
+                    // Write to temp CSV for Python
+                    fputcsv($temp_handle, [$cleaned_text, $sentiment]);
+
+                    // Model Prediction (Predicted) - If model exists
+                    // We assume the global model is what we want to test against.
+                    // Ideally, we'd load a specific model version, but for now use the active one.
+                    // This re-analyzes using the full pipeline including preprocessing for consistency.
+                    $model_result = $model->analyze($text);
+                    $predicted_sentiment = $model_result['sentiment'] ?? 'neutral';
+
+                    // Update Confusion Matrix
+                    // Ensure keys exist to avoid warnings if model returns something unexpected (though it shouldn't)
+                    if (isset($confusion_matrix[$sentiment][$predicted_sentiment])) {
+                        $confusion_matrix[$sentiment][$predicted_sentiment]++;
+                    }
+
+                    // Store row data for table
+                    $dataset_data[] = [
+                        'text' => $text,
+                        'actual' => $sentiment,
+                        'predicted' => $predicted_sentiment,
+                        'score' => $total_score
+                    ];
 
                     // Count words for WordCloud
                     foreach ($stemmed_tokens as $token) {
@@ -117,6 +156,42 @@ if ($conn) {
                 }
             }
             fclose($handle);
+            fclose($temp_handle);
+
+            // Execute Python Script for Evaluation
+            $python_script = __DIR__ . '/../scripts/train.py';
+            $escaped_csv = escapeshellarg($temp_csv);
+            $cmd = "python \"$python_script\" --csv $escaped_csv --dataset_id $dataset_id 2>&1";
+            $output = shell_exec($cmd);
+
+            // Read Python Result JSON
+            $json_path = __DIR__ . "/data/testing/test_data_{$dataset_id}.json";
+            if (file_exists($json_path)) {
+                $py_data = json_decode(file_get_contents($json_path), true);
+                if ($py_data) {
+                    // Reset Confusion Matrix with Python Data
+                    $confusion_matrix = [
+                        'positive' => ['positive' => 0, 'neutral' => 0, 'negative' => 0],
+                        'neutral' => ['positive' => 0, 'neutral' => 0, 'negative' => 0],
+                        'negative' => ['positive' => 0, 'neutral' => 0, 'negative' => 0],
+                    ];
+
+                    $y_test = $py_data['y_test'];
+                    $y_pred = $py_data['y_pred'];
+
+                    for ($i = 0; $i < count($y_test); $i++) {
+                        $actual = $y_test[$i];
+                        $pred = $y_pred[$i];
+                        // Normalize casing just in case
+                        $actual = strtolower($actual);
+                        $pred = strtolower($pred);
+
+                        if (isset($confusion_matrix[$actual][$pred])) {
+                            $confusion_matrix[$actual][$pred]++;
+                        }
+                    }
+                }
+            }
 
             // Process word counts for visualization
             arsort($word_counts);
@@ -250,6 +325,8 @@ include '../includes/header.php';
                 </div>
             </article>
         </section>
+        </section>
+
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-6">
             <!-- Word Cloud -->
             <article class="card lg:col-span-2">
@@ -262,6 +339,127 @@ include '../includes/header.php';
                 </div>
                 <p class="text-sm opacity-70 mt-2 text-center">Kata-kata yang paling sering muncul dalam dataset (setelah preprocessing)</p>
             </article>
+        </section>
+
+        <!-- Model Evaluation -->
+        <section class="mt-8">
+            <h2 class="text-2xl font-black mb-6 border-b-4 border-black inline-block pr-8">Evaluasi Model</h2>
+
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <!-- Confusion Matrix -->
+                <article class="card">
+                    <h3 class="text-xl font-bold mb-4">Confusion Matrix</h3>
+                    <!-- <p class="text-sm opacity-70 mb-4">Perbandingan Label Aktual (Lexicon) vs Prediksi Model Python (Naive Bayes)</p> -->
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="p-2 border-2 border-transparent"></th>
+                                    <th colspan="3" class="p-2 border-2 border-black bg-gray-100 font-bold">Predicted Sentiment</th>
+                                </tr>
+                                <tr>
+                                    <th class="p-2 border-2 border-black bg-gray-100 font-bold w-1/4">Actual Sentiment</th>
+                                    <th class="p-2 border-2 border-black font-bold text-green-600 bg-green-50">Positive</th>
+                                    <th class="p-2 border-2 border-black font-bold text-yellow-600 bg-yellow-50">Neutral</th>
+                                    <th class="p-2 border-2 border-black font-bold text-red-600 bg-red-50">Negative</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th class="p-2 border-2 border-black font-bold text-green-600 bg-green-50">Positive</th>
+                                    <td class="p-4 border-2 border-black font-mono text-xl font-bold bg-green-100"><?php echo $confusion_matrix['positive']['positive']; ?></td>
+                                    <td class="p-4 border-2 border-black font-mono text-xl"><?php echo $confusion_matrix['positive']['neutral']; ?></td>
+                                    <td class="p-4 border-2 border-black font-mono text-xl"><?php echo $confusion_matrix['positive']['negative']; ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="p-2 border-2 border-black font-bold text-yellow-600 bg-yellow-50">Neutral</th>
+                                    <td class="p-4 border-2 border-black font-mono text-xl"><?php echo $confusion_matrix['neutral']['positive']; ?></td>
+                                    <td class="p-4 border-2 border-black font-mono text-xl font-bold bg-yellow-100"><?php echo $confusion_matrix['neutral']['neutral']; ?></td>
+                                    <td class="p-4 border-2 border-black font-mono text-xl"><?php echo $confusion_matrix['neutral']['negative']; ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="p-2 border-2 border-black font-bold text-red-600 bg-red-50">Negative</th>
+                                    <td class="p-4 border-2 border-black font-mono text-xl"><?php echo $confusion_matrix['negative']['positive']; ?></td>
+                                    <td class="p-4 border-2 border-black font-mono text-xl"><?php echo $confusion_matrix['negative']['neutral']; ?></td>
+                                    <td class="p-4 border-2 border-black font-mono text-xl font-bold bg-red-100"><?php echo $confusion_matrix['negative']['negative']; ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <!-- Model Metrics -->
+                <article class="card">
+                    <h3 class="text-xl font-bold mb-4">Performa Model</h3>
+                    <?php
+                        // Simple accuracy calculation
+                        $correct = $confusion_matrix['positive']['positive'] + $confusion_matrix['neutral']['neutral'] + $confusion_matrix['negative']['negative'];
+                        $total_samples = array_sum(array_map('array_sum', $confusion_matrix));
+                        $accuracy = $total_samples > 0 ? ($correct / $total_samples) * 100 : 0;
+                    ?>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-black text-white p-4 border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,0.2)]">
+                            <h4 class="text-sm uppercase tracking-widest opacity-80 mb-1">Akurasi Global</h4>
+                            <p class="text-4xl font-black font-mono"><?php echo number_format($accuracy, 1); ?>%</p>
+                        </div>
+                        <div class="p-4 border-2 border-black bg-blue-50">
+                            <h4 class="font-bold mb-2">Insight</h4>
+                            <p class="text-sm opacity-80">
+                                Dari <strong><?php echo number_format($total_samples); ?></strong> data, model berhasil memprediksi <strong><?php echo number_format($correct); ?></strong> data dengan tepat sesuai label lexicon.
+                            </p>
+                            <p class="text-xs mt-2 opacity-60">*Catatan: Ini adalah akurasi training (model diuji pada data yang sama dengan data training).</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Classification Table -->
+        <section class="mt-8">
+            <h2 class="text-2xl font-black mb-6 border-b-4 border-black inline-block pr-8">Data Klasifikasi</h2>
+            <div class="card overflow-hidden p-0">
+                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-black text-white sticky top-0 z-10">
+                            <tr>
+                                <th class="p-4 font-bold border-b-2 border-black">Teks</th>
+                                <th class="p-4 font-bold border-b-2 border-black w-32">Actual</th>
+                                <th class="p-4 font-bold border-b-2 border-black w-32">Predicted</th>
+                                <th class="p-4 font-bold border-b-2 border-black w-24 text-center">Match</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y-2 divide-gray-100">
+                            <?php foreach ($dataset_data as $row):
+                                $is_match = $row['actual'] === $row['predicted'];
+                                $actual_color = $row['actual'] === 'positive' ? 'text-green-600 bg-green-50' : ($row['actual'] === 'negative' ? 'text-red-600 bg-red-50' : 'text-yellow-600 bg-yellow-50');
+                                $pred_color = $row['predicted'] === 'positive' ? 'text-green-600 bg-green-50' : ($row['predicted'] === 'negative' ? 'text-red-600 bg-red-50' : 'text-yellow-600 bg-yellow-50');
+                            ?>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4 text-sm font-mono border-r border-gray-100"><?php echo htmlspecialchars(mb_strimwidth($row['text'], 0, 100, "...")); ?></td>
+                                <td class="p-4 text-xs font-bold uppercase border-r border-gray-100">
+                                    <span class="px-2 py-1 rounded-sm border border-black/10 <?php echo $actual_color; ?>">
+                                        <?php echo $row['actual']; ?>
+                                    </span>
+                                </td>
+                                <td class="p-4 text-xs font-bold uppercase border-r border-gray-100">
+                                    <span class="px-2 py-1 rounded-sm border border-black/10 <?php echo $pred_color; ?>">
+                                        <?php echo $row['predicted']; ?>
+                                    </span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <?php if($is_match): ?>
+                                        <span class="material-symbols-outlined text-green-500 font-bold">check</span>
+                                    <?php else: ?>
+                                        <span class="material-symbols-outlined text-red-500 font-bold">close</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
     </div>
 </main>
